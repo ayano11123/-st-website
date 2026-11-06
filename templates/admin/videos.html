@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}{% set page='Videos' %}
+{% block body %}
+<h1>Learn videos</h1><p class="hint" style="margin-bottom:12px">Paste a normal YouTube link (e.g. https://www.youtube.com/watch?v=XXXXXXXXXXX). Leave it empty to show “coming soon”. Category must be one of: fertilizers, biofertilizers, nutrition, soil, crops, home-gardening, problems.</p>
+{% for v in rows %}<form method="post" class="panel fl form-grid" style="margin-bottom:12px"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="id" value="{{ v.id }}">
+<div><label>Title (English)</label><input name="title_en" value="{{ v.title_en }}"></div><div><label>शीर्षक (हिंदी)</label><input name="title_hi" value="{{ v.title_hi }}"></div>
+<div class="full"><label>YouTube link</label><input name="youtube_url" value="{{ v.youtube_url }}"></div>
+<div><label>Category</label><input name="category" value="{{ v.category }}"></div><div><label>Order</label><input name="sort" type="number" value="{{ v.sort }}"></div>
+<div class="full"><label><input type="checkbox" name="active" {{ 'checked' if v.active }}> Show on website</label> &nbsp; <button class="btn btn-green btn-sm" name="action" value="save">Save</button> <button class="btn btn-sm" style="background:#fde8e5;color:#8a2218" name="action" value="delete" data-confirm="Delete this video?">Delete</button></div></form>{% endfor %}
+<fieldset><legend>Add a video</legend><form method="post" class="form-grid fl"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="action" value="add"><input type="hidden" name="active" value="1">
+<div><label>Title (English)</label><input name="title_en" required></div><div><label>शीर्षक (हिंदी)</label><input name="title_hi"></div><div class="full"><label>YouTube link</label><input name="youtube_url"></div>
+<div><label>Category</label><input name="category" value="fertilizers"></div><div><label>Order</label><input name="sort" type="number" value="50"></div><div class="full"><button class="btn btn-green">Add video</button></div></form></fieldset>
+{% endblock %}

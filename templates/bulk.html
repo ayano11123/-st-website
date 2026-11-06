@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% set title = tr('Bulk Order Enquiry','थोक ऑर्डर पूछताछ') %}
+{% set wa_text = 'Hello FAIRY CROP, I want to enquire about a bulk order.' %}
+{% block content %}
+<div class="page-head"><div class="wrap"><h1>{{ tr('Bulk Order Enquiry','थोक ऑर्डर पूछताछ') }}</h1><p>{{ tr('For farmers, agricultural dealers, nurseries, distributors, retailers and wholesale buyers.','किसानों, कृषि डीलरों, नर्सरी, वितरकों, खुदरा और थोक खरीदारों के लिए।') }}</p></div></div>
+<div class="wrap" style="padding:34px 0 0">
+  <div class="grid g3" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+    {% for ic, en, hi in [('🚜','Farmers','किसान'),('🏪','Agri dealers','कृषि डीलर'),('🪴','Nurseries','नर्सरी'),('🚚','Distributors','वितरक'),('🛍️','Retailers','खुदरा विक्रेता'),('📦','Wholesale buyers','थोक खरीदार')] %}
+    <div class="why" style="text-align:center;padding:18px"><div style="font-size:32px">{{ ic }}</div><b>{{ tr(en,hi) }}</b></div>{% endfor %}
+  </div>
+</div>
+<div class="wrap two-col">
+  <form method="post" class="panel fl form-grid">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}"><input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div><label for="n">{{ tr('Name','नाम') }}</label><input id="n" name="name" required value="{{ f.get('name','') }}"></div>
+    <div><label for="m">{{ tr('Mobile number','मोबाइल नंबर') }}</label><input id="m" name="mobile" required inputmode="numeric" value="{{ f.get('mobile','') }}"></div>
+    <div><label for="b">{{ tr('Business name','व्यवसाय का नाम') }}</label><input id="b" name="business" value="{{ f.get('business','') }}"></div>
+    <div><label for="l">{{ tr('Location','स्थान') }}</label><input id="l" name="location" value="{{ f.get('location','') }}" placeholder="{{ tr('Village / town, district, state','गाँव / शहर, ज़िला, राज्य') }}"></div>
+    <div class="full"><label for="p">{{ tr('Products required','ज़रूरी उत्पाद') }}</label><textarea id="p" name="products" required>{{ f.get('products','') }}</textarea></div>
+    <div class="full"><label for="q">{{ tr('Approximate quantity','अनुमानित मात्रा') }}</label><input id="q" name="quantity" value="{{ f.get('quantity','') }}" placeholder="{{ tr('e.g. 100 packs of 1 litre','जैसे 1 लीटर के 100 पैक') }}"></div>
+    <div class="full"><button class="btn btn-green" type="submit">{{ tr('Send bulk enquiry','थोक पूछताछ भेजें') }}</button></div>
+  </form>
+  <aside class="panel"><h3>{{ tr('Prefer WhatsApp?','WhatsApp पसंद है?') }}</h3><p class="muted" style="margin:8px 0 14px">{{ tr('Send us the products and quantity and we will reply.','ज़रूरी उत्पाद और मात्रा भेजें, हम जवाब देंगे।') }}</p><a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="{{ wa('Hello FAIRY CROP, I want to enquire about a bulk order.') }}">💬 WhatsApp +91 {{ S.phone }}</a></aside>
+</div>
+{% endblock %}

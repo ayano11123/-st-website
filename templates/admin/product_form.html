@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}{% set page='Product' %}
+{% macro inp(name, label, hint='', ta=false, rows=3) %}
+<div class="fl"><label for="{{ name }}">{{ label }}</label>
+{% if ta %}<textarea id="{{ name }}" name="{{ name }}" rows="{{ rows }}">{{ p[name] or '' }}</textarea>{% else %}<input id="{{ name }}" name="{{ name }}" value="{{ p[name] or '' }}">{% endif %}{% if hint %}<div class="hint">{{ hint }}</div>{% endif %}</div>
+{% endmacro %}
+{% macro pair(base, label, hint='', ta=true) %}
+<div class="form-grid">{{ inp(base ~ '_en', label ~ ' (English)', hint, ta) }}{{ inp(base ~ '_hi', label ~ ' (हिंदी)', '', ta) }}</div>
+{% endmacro %}
+{% block body %}
+<h1>{{ 'Edit product' if p.id else 'Add product' }}</h1>
+<p class="warn" style="margin-bottom:16px">Only enter dosage, usage, composition, crops and licence details that match the <b>approved product label</b> and manufacturer documents. Leave a field empty if you are not sure — the website then shows “to be added from the verified label”.</p>
+<form method="post" enctype="multipart/form-data">
+<input type="hidden" name="_csrf" value="{{ csrf() }}">
+<fieldset><legend>Basics</legend>
+  <div class="form-grid">{{ inp('name_en','Product name (English) *') }}{{ inp('name_hi','Product name (हिंदी)') }}</div>
+  <div class="fl"><label for="category_id">Category *</label><select id="category_id" name="category_id">{% for c in cats %}<option value="{{ c.id }}" {{ 'selected' if c.id==cat_id }}>{{ c.name_en }}</option>{% endfor %}</select></div>
+  {{ pair('short','Short line','One line shown on product cards', false) }}
+  {{ pair('desc','Description') }}
+  {{ pair('benefits','Benefits','One benefit per line') }}
+  <label style="margin-right:18px"><input type="checkbox" name="active" {{ 'checked' if p.active }}> Live on website</label>
+  <label style="margin-right:18px"><input type="checkbox" name="is_best_seller" {{ 'checked' if p.is_best_seller }}> Best seller</label>
+  <label style="margin-right:18px"><input type="checkbox" name="is_featured" {{ 'checked' if p.is_featured }}> Featured</label>
+  <label><input type="checkbox" name="is_demo" {{ 'checked' if p.is_demo }}> Demo / sample content</label>
+  <div class="fl" style="margin-top:12px;max-width:300px"><label for="audience">Audience</label><select id="audience" name="audience">{% for v,l in [('both','Farmers & gardeners'),('farmer','Farmers'),('gardener','Home gardeners')] %}<option value="{{ v }}" {{ 'selected' if p.audience==v }}>{{ l }}</option>{% endfor %}</select></div>
+</fieldset>
+<fieldset><legend>Pack sizes, price, discount &amp; stock</legend>
+  <p class="hint" style="margin-bottom:8px">Discount = difference between MRP and selling price (shown automatically). Remove a row to delete that pack size.</p>
+  <div class="vrow" style="font-weight:700;font-size:12.5px"><span>Pack size (e.g. 500 ml)</span><span>Selling price ₹</span><span>MRP ₹</span><span>Stock</span><span></span></div>
+  <div id="vRows">{% for v in variants %}<div class="vrow"><input type="hidden" name="v_id" value="{{ v.id }}"><input name="v_label" value="{{ v.label }}"><input name="v_price" type="number" step="0.01" min="0" value="{{ v.price }}"><input name="v_mrp" type="number" step="0.01" min="0" value="{{ v.mrp }}"><input name="v_stock" type="number" min="0" value="{{ v.stock }}"><button class="btn btn-sm vdel" type="button">✕</button></div>{% endfor %}</div>
+  <template id="vTemplate"><div class="vrow"><input type="hidden" name="v_id" value=""><input name="v_label" placeholder="1 litre"><input name="v_price" type="number" step="0.01" min="0"><input name="v_mrp" type="number" step="0.01" min="0"><input name="v_stock" type="number" min="0" value="0"><button class="btn btn-sm vdel" type="button">✕</button></div></template>
+  <button class="btn btn-line" id="addVariant" type="button">+ Add pack size</button>
+</fieldset>
+<fieldset><legend>Images</legend>
+  <div class="imgs">{% for im in images %}<label><img src="{{ im.path }}" alt=""><span><input type="checkbox" name="del_img" value="{{ im.id }}"> remove</span></label>{% endfor %}</div>
+  <div class="fl" style="margin-top:12px"><label for="images">Upload images (JPG / PNG / WEBP, several allowed)</label><input id="images" type="file" name="images" accept="image/*" multiple>
+  <div class="hint">Use real packaging and in-use photos. Add before/after photos only if genuine and backed by evidence. The first image is the main one.</div></div>
+</fieldset>
+<fieldset><legend>Which problem does it help with?</legend>
+  {{ pair('problem','What problem you may see') }}{{ pair('why','Why it may happen') }}{{ pair('helps','How the product is intended to help') }}
+</fieldset>
+<fieldset><legend>How to use (from the label)</legend>
+  <div class="fl" style="max-width:320px"><label for="method">Application method</label><select id="method" name="method">{% for k,(en,hi,ic) in METHODS.items() %}<option value="{{ k }}" {{ 'selected' if p.method==k }}>{{ en }}</option>{% endfor %}</select></div>
+  {{ pair('when','When to use') }}{{ pair('prepare','How to prepare') }}{{ pair('dosage','Dosage') }}{{ pair('apply','How to apply') }}{{ pair('precautions','Precautions','One per line') }}{{ pair('storage','Storage instructions') }}
+</fieldset>
+<fieldset><legend>Product details &amp; regulatory information</legend>
+  {{ inp('composition','Composition (exactly as on label)','',true) }}
+  <div class="form-grid">{{ inp('batch_info','Batch information') }}{{ inp('expiry_info','Expiry information') }}{{ inp('manufacturer','Manufacturer (name & address)') }}{{ inp('marketer','Marketer (leave empty for FAIRY CROP AGRISCIENCE LLP)') }}</div>
+  {{ inp('regulatory','Regulatory / licence details (only real, verified ones)','e.g. fertiliser / biofertiliser licence or registration numbers from your documents',true) }}
+</fieldset>
+<fieldset><legend>Search tags</legend>
+  <div class="form-grid">{{ inp('crops','Suitable crops','comma separated, e.g. wheat,rice,mustard') }}{{ inp('plants','Suitable plants','e.g. home garden plants,flowering plants') }}{{ inp('problems','Problems it addresses','Only what the verified info supports, e.g. weak growth') }}{{ inp('needs','Gardening / farming needs','e.g. soil feeding,pots and balcony') }}</div>
+</fieldset>
+<button class="btn btn-green" type="submit">Save product</button> <a class="btn btn-line" href="{{ url_for('admin.products') }}">Back</a>
+</form>
+{% endblock %}

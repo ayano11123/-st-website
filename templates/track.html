@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set title = tr('Track Your Order','ऑर्डर ट्रैक करें') %}
+{% block content %}
+<div class="wrap" style="padding:36px 0 70px;max-width:860px">
+  <h1 style="margin-bottom:16px">{{ tr('Track Your Order','ऑर्डर ट्रैक करें') }}</h1>
+  <form method="post" class="panel fl form-grid">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <div><label for="on">{{ tr('Order number','ऑर्डर नंबर') }}</label><input id="on" name="order_no" required placeholder="FC1A2B3C" value="{{ request.form.get('order_no','') }}"></div>
+    <div><label for="mb">{{ tr('Mobile number used for the order','ऑर्डर में दिया मोबाइल नंबर') }}</label><input id="mb" name="mobile" required inputmode="numeric" value="{{ request.form.get('mobile','') }}"></div>
+    <div class="full"><button class="btn btn-green" type="submit">{{ tr('Track','ट्रैक करें') }}</button></div>
+  </form>
+  {% if o %}<div class="panel" style="margin-top:20px"><h2 style="font-size:24px">{{ o.order_no }}</h2>{% include '_timeline.html' %}{% include '_orderbox.html' %}</div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{# Reusable pieces: logo mark, stars, placeholder pack artwork, product card #}
+{% macro logo_mark() %}
+<svg viewBox="0 0 64 64" aria-hidden="true">
+  <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fc24a"/><stop offset="1" stop-color="#16603a"/></linearGradient></defs>
+  <circle cx="32" cy="32" r="30" fill="url(#lg)"/>
+  <path d="M32 50V30" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M32 33c0-9-6-14-15-14 0 9 5 14 15 14z" fill="#fff"/>
+  <path d="M32 29c0-8 5-13 14-13 0 8-5 13-14 13z" fill="#f3d68a"/>
+  <path d="M20 50h24" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+</svg>
+{% endmacro %}
+
+{% macro stars(r) %}{% set n = (r or 0)|round|int %}<span class="stars" aria-label="{{ r }} out of 5">{% for i in range(5) %}{% if i < n %}★{% else %}<i>★</i>{% endif %}{% endfor %}</span>{% endmacro %}
+
+{# Clearly labelled PLACEHOLDER packaging - not real product packaging #}
+{% macro pack(seed, label='') %}
+{% set cols = [('#2f9e5b','#0f4a2f'),('#c58b2a','#7a4f0b'),('#3f8fb5','#1b4a66'),('#8a5fb0','#472a66'),('#d36a4a','#7d2b17'),('#5aa63a','#2b5a14')] %}
+{% set c = cols[(seed|int) % 6] %}
+{% if 'kg' in (label|lower) %}
+<svg viewBox="0 0 200 240" role="img" aria-label="Demo pack placeholder">
+  <path d="M40 30h120l14 190c0 6-4 10-10 10H36c-6 0-10-4-10-10z" fill="{{ c[0] }}"/>
+  <path d="M40 30h120l4 40H36z" fill="{{ c[1] }}"/>
+  <rect x="52" y="86" width="96" height="108" rx="10" fill="#fffdf8"/>
+  <text x="100" y="112" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="{{ c[1] }}" letter-spacing="2">FAIRY CROP</text>
+  <path d="M100 150v-24" stroke="{{ c[0] }}" stroke-width="3" stroke-linecap="round"/><path d="M100 140c0-9-6-13-14-13 0 8 5 13 14 13z" fill="{{ c[0] }}"/><path d="M100 136c0-8 5-12 13-12 0 7-5 12-13 12z" fill="#d9a53a"/>
+  <text x="100" y="176" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#555">{{ label }}</text>
+  <rect x="60" y="188" width="80" height="14" rx="7" fill="#fff3cd"/><text x="100" y="198" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" font-weight="700" fill="#6a4b00">DEMO PACK</text>
+</svg>
+{% else %}
+<svg viewBox="0 0 200 260" role="img" aria-label="Demo pack placeholder">
+  <rect x="78" y="8" width="44" height="30" rx="6" fill="{{ c[1] }}"/>
+  <rect x="86" y="36" width="28" height="14" fill="#e8e3d0"/>
+  <path d="M62 50h76c14 0 24 10 24 24v150c0 14-10 24-24 24H62c-14 0-24-10-24-24V74c0-14 10-24 24-24z" fill="{{ c[0] }}"/>
+  <rect x="52" y="86" width="96" height="116" rx="10" fill="#fffdf8"/>
+  <text x="100" y="112" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="{{ c[1] }}" letter-spacing="2">FAIRY CROP</text>
+  <path d="M100 152v-24" stroke="{{ c[0] }}" stroke-width="3" stroke-linecap="round"/><path d="M100 142c0-9-6-13-14-13 0 8 5 13 14 13z" fill="{{ c[0] }}"/><path d="M100 138c0-8 5-12 13-12 0 7-5 12-13 12z" fill="#d9a53a"/>
+  <text x="100" y="178" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#555">{{ label }}</text>
+  <rect x="60" y="186" width="80" height="14" rx="7" fill="#fff3cd"/><text x="100" y="196" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" font-weight="700" fill="#6a4b00">DEMO PACK</text>
+</svg>
+{% endif %}
+{% endmacro %}
+
+{% macro card(p) %}
+<article class="pcard rv">
+  <a href="{{ url_for('product', slug=p.slug) }}" class="pimg" aria-label="{{ L(p,'name') }}">
+    {% if p.img %}<img src="{{ p.img }}" alt="{{ L(p,'name') }}" loading="lazy" width="400" height="400">{% else %}{{ pack(p.id, p.packlabel) }}{% endif %}
+    {% if p.is_demo %}<span class="tag-demo">DEMO</span>{% endif %}
+    {% set d = disc(p.minprice, p.mrp) %}{% if d %}<span class="tag-off">{{ d }}% {{ tr('OFF','छूट') }}</span>{% endif %}
+  </a>
+  <div class="pbody">
+    <span class="pcat">{{ L({'n_en':p.cat_en,'n_hi':p.cat_hi},'n') }}</span>
+    <a href="{{ url_for('product', slug=p.slug) }}" class="pname">{{ L(p,'name') }}</a>
+    <p class="pshort">{{ L(p,'short') }}</p>
+    {% if p.rcount %}<div>{{ stars(p.rating) }} <small>({{ p.rcount }})</small></div>{% endif %}
+    <div class="price"><small>{{ tr('From','शुरू') }}</small><b>{{ money(p.minprice) }}</b>{% if p.mrp and p.mrp > p.minprice %}<s>{{ money(p.mrp) }}</s>{% endif %}</div>
+    <div class="prow">
+      {% if p.vid %}
+      <form method="post" action="{{ url_for('cart_add') }}"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="variant_id" value="{{ p.vid }}"><button class="btn btn-green">{{ tr('Add to Cart','कार्ट में डालें') }}</button></form>
+      {% else %}<span class="btn btn-line" style="opacity:.6">{{ tr('Out of stock','स्टॉक में नहीं') }}</span>{% endif %}
+      <a class="btn btn-line" href="{{ url_for('product', slug=p.slug) }}">{{ tr('Details','विवरण') }}</a>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{% macro csrf_f() %}<input type="hidden" name="_csrf" value="{{ csrf() }}">{% endmacro %}
+
+{% set VCAT = {'fertilizers':('Fertilizers','खाद','🌾'),'biofertilizers':('Biofertilizers','जैव उर्वरक','🧫'),'nutrition':('Plant nutrition','पौध पोषण','💧'),'soil':('Soil health','मिट्टी की सेहत','🪱'),'crops':('Crop guidance','फ़सल मार्गदर्शन','🌱'),'home-gardening':('Home gardening','घरेलू बागवानी','🏡'),'problems':('Plant problems','पौधों की समस्याएँ','🔍')} %}
+{% macro vcard(v) %}
+{% set vid = yt(v.youtube_url) %}
+{% set vc = VCAT.get(v.category, (v.category or 'Video', v.category or 'वीडियो', '🎬')) %}
+<article class="vcard rv" data-cat="{{ v.category }}"{% if vid %} data-yt="{{ vid }}" tabindex="0" role="button" aria-label="{{ tr('Play video','वीडियो चलाएँ') }}: {{ L(v,'title') }}"{% endif %}>
+  <div class="vthumb">
+    {% if vid %}<img src="https://img.youtube.com/vi/{{ vid }}/hqdefault.jpg" alt="" loading="lazy"><span class="play">▶</span>
+    {% else %}<span style="font-size:54px;position:relative">{{ vc[2] }}</span><span class="soon">{{ tr('Video coming soon','वीडियो जल्द आ रहा है') }}</span>{% endif %}
+  </div>
+  <div class="vbody"><small>{{ tr(vc[0], vc[1]) }}</small><h3>{{ L(v,'title') }}</h3></div>
+</article>
+{% endmacro %}

@@ -1,0 +1,9 @@
+{# needs: o, items #}
+<table class="spec">
+{% for i in items %}<tr><td style="width:auto">{{ i.product_name }} <span class="muted">({{ i.pack_label }}) × {{ i.qty }}</span></td><td class="right">{{ money(i.price * i.qty) }}</td></tr>{% endfor %}
+<tr><td>{{ tr('Subtotal','उप-योग') }}</td><td class="right">{{ money(o.subtotal) }}</td></tr>
+<tr><td>{{ tr('Shipping','शिपिंग') }}</td><td class="right">{{ money(o.shipping) if o.shipping else tr('Free','मुफ़्त') }}</td></tr>
+<tr><td><b>{{ tr('Total','कुल') }}</b></td><td class="right"><b>{{ money(o.total) }}</b></td></tr>
+</table>
+<p style="margin-top:12px"><b>{{ tr('Deliver to','डिलीवरी पता') }}:</b> {{ o.name }}, {{ o.address }}, {{ o.city }}, {{ o.state }} - {{ o.pincode }} · 📞 {{ o.mobile }}</p>
+<p><b>{{ tr('Payment','भुगतान') }}:</b> {{ 'Cash on Delivery' if o.payment_method=='cod' else 'Online (Razorpay)' }} · <span class="pill {{ 'ok' if o.payment_status in ('paid','cod') else 'warn' }}">{{ o.payment_status }}</span></p>

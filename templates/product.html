@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% from '_macros.html' import card, pack, stars with context %}
+{% set title = L(p,'name') %}
+{% set description = L(p,'short') %}
+{% set wa_text = 'Hello FAIRY CROP, I want to know about: ' ~ p.name_en %}
+{% macro sect(en, hi, text) %}{% if text %}{{ text }}{% else %}<span class="pending">{{ tr('To be added from the verified product label.','सत्यापित प्रोडक्ट लेबल से जोड़ा जाएगा।') }}</span>{% endif %}{% endmacro %}
+{% block head %}
+<script type="application/ld+json">{{ {"@context":"https://schema.org","@type":"Product","name":p.name_en,"description":p.short_en,"brand":{"@type":"Brand","name":S.brand},"offers":{"@type":"Offer","priceCurrency":"INR","price":p.minprice,"availability":("https://schema.org/InStock" if p.instock else "https://schema.org/OutOfStock")}}|tojson }}</script>
+{% endblock %}
+{% block content %}
+{% set first_ok = variants|selectattr('stock','gt',0)|first %}
+<div class="wrap">
+<div class="crumbs" style="color:var(--muted);padding-top:20px"><a href="{{ url_for('home') }}">{{ tr('Home','होम') }}</a> / <a href="{{ url_for('shop', category=p.cat_slug) }}">{{ L({'n_en':p.cat_en,'n_hi':p.cat_hi},'n') }}</a> / {{ L(p,'name') }}</div>
+<div class="pd">
+  <div class="gallery">
+    <div class="main">
+      {% if images %}<img src="{{ images[0].path }}" alt="{{ L(p,'name') }}" width="700" height="700">{% else %}{{ pack(p.id, variants[0].label if variants else '') }}{% endif %}
+      {% if p.is_demo %}<span class="tag-demo">DEMO</span>{% endif %}
+    </div>
+    {% if images|length > 1 %}<div class="thumbs">{% for im in images %}<button type="button" data-src="{{ im.path }}" class="{{ 'on' if loop.first }}"><img src="{{ im.path }}" alt="" loading="lazy"></button>{% endfor %}</div>{% endif %}
+    {% if not images %}<p class="muted" style="font-size:13px;margin-top:10px">{{ tr('Placeholder pack picture. Real packaging photos will be added from the owner dashboard.','यह प्लेसहोल्डर पैक चित्र है। असली पैकेजिंग फ़ोटो एडमिन डैशबोर्ड से जोड़ी जाएगी।') }}</p>{% endif %}
+  </div>
+  <div>
+    <span class="pcat">{{ L({'n_en':p.cat_en,'n_hi':p.cat_hi},'n') }}</span>
+    <h1>{{ L(p,'name') }}</h1>
+    {% if p.rcount %}<div>{{ stars(p.rating) }} <a href="#reviews"><small>{{ p.rating }} ({{ p.rcount }} {{ tr('reviews','रिव्यू') }})</small></a></div>{% endif %}
+    <p class="muted" style="margin:8px 0 14px">{{ L(p,'short') }}</p>
+    {% if p.is_demo %}<p class="warn" style="margin-bottom:14px">{{ tr('DEMO product: name, price and text are samples only.','डेमो उत्पाद: नाम, कीमत और लेख केवल नमूना हैं।') }}</p>{% endif %}
+    <div class="price" style="padding:0"><span class="big-price" id="pPrice">{{ money(p.minprice) }}</span><s id="pMrp" hidden></s><span class="pill bad" id="pOff" hidden></span></div>
+    <small class="muted">{{ tr('Inclusive of taxes where applicable. Shipping calculated at checkout.','जहाँ लागू हो कर सहित। शिपिंग चेकआउट पर जुड़ेगी।') }}</small>
+    <form method="post" action="{{ url_for('cart_add') }}" style="margin-top:14px">
+      <input type="hidden" name="_csrf" value="{{ csrf() }}">
+      <b>{{ tr('Pack size','पैक साइज़') }}</b>
+      <div class="packs">{% for v in variants %}
+        <label class="pack"><input type="radio" name="variant_id" value="{{ v.id }}" data-price="{{ v.price }}" data-mrp="{{ v.mrp }}" data-stock="{{ v.stock }}" data-label="{{ v.label }}" {{ 'checked' if (first_ok and v.id==first_ok.id) or (not first_ok and loop.first) }} {{ 'disabled' if v.stock<=0 }}><span>{{ v.label }}</span></label>
+      {% endfor %}</div>
+      {% if variants|selectattr('stock','gt',0)|list %}
+      <p id="stockNote" class="pill warn" hidden>{{ tr('Low stock - order soon','स्टॉक कम है - जल्दी ऑर्डर करें') }}</p>
+      <div class="buy">
+        <div class="qty"><button type="button" data-d="-" aria-label="-">−</button><input id="qtyInput" name="qty" type="number" value="1" min="1" max="50" aria-label="{{ tr('Quantity','मात्रा') }}"><button type="button" data-d="+" aria-label="+">+</button></div>
+        <button class="btn btn-green" type="submit">🛒 {{ tr('Add to Cart','कार्ट में डालें') }}</button>
+        <button class="btn btn-primary" type="submit" name="buy_now" value="1">{{ tr('Buy Now','अभी खरीदें') }}</button>
+      </div>
+      {% else %}<p class="flash err">{{ tr('Currently out of stock. Ask us on WhatsApp about availability.','अभी स्टॉक में नहीं है। उपलब्धता के लिए WhatsApp पर पूछें।') }}</p>{% endif %}
+    </form>
+    <a id="waProduct" class="btn btn-wa btn-block" target="_blank" rel="noopener" data-base="{{ wa('Hello FAIRY CROP, I want to know about: ' ~ p.name_en) }}" href="{{ wa('Hello FAIRY CROP, I want to know about: ' ~ p.name_en) }}">💬 {{ tr('Ask about this product on WhatsApp','इस उत्पाद के बारे में WhatsApp पर पूछें') }}</a>
+    <div class="pin-box" data-pin><b>📍 {{ tr('Check delivery to your PIN code','अपने पिन कोड पर डिलीवरी जाँचें') }}</b>
+      <div class="row" style="margin-top:8px"><input inputmode="numeric" maxlength="6" placeholder="{{ tr('6-digit PIN code','6 अंकों का पिन कोड') }}"><button class="btn btn-green btn-sm" type="button">{{ tr('Check','जाँचें') }}</button></div><div class="pin-msg"></div></div>
+    <p class="muted" style="font-size:13.5px;margin-top:12px">{{ tr('Sold by','विक्रेता') }}: {{ p.marketer or S.business_name }}</p>
+  </div>
+</div>
+
+<div class="block" id="problem">
+  <h2>{{ tr('Which Problem Does This Product Help With?','यह उत्पाद किस समस्या में सहायक है?') }}</h2>
+  <div class="grid g2">
+    <div><h3 style="margin-top:0">🔎 {{ tr('What problem you may see','आपको क्या समस्या दिख सकती है') }}</h3><p>{{ sect('','',L(p,'problem')) }}</p>
+      <h3>❓ {{ tr('Why it may happen','यह क्यों हो सकती है') }}</h3><p>{{ sect('','',L(p,'why')) }}</p></div>
+    <div><h3 style="margin-top:0">🌿 {{ tr('How this product is intended to help','यह उत्पाद कैसे सहायता के लिए बना है') }}</h3><p>{{ sect('','',L(p,'helps')) }}</p>
+      <h3>🌾 {{ tr('Suitable crops and plants','उपयुक्त फ़सलें और पौधे') }}</h3>
+      {% set tags = csv(p.crops) + csv(p.plants) %}
+      {% if tags %}<div class="chips" style="margin-top:6px">{% for t in tags %}<a class="chip" href="{{ url_for('shop', **({'crop':t} if t in csv(p.crops) else {'plant':t})) }}">{{ tag(t)|capitalize }}</a>{% endfor %}</div>
+      {% else %}<span class="pending">{{ tr('To be added from the verified product label.','सत्यापित प्रोडक्ट लेबल से जोड़ा जाएगा।') }}</span>{% endif %}</div>
+  </div>
+  {% if p.is_demo %}<p class="pending" style="margin-top:16px">{{ tr('Demo text. For real products, this section is written only from the approved label and verified manufacturer information.','डेमो लेख। असली उत्पादों के लिए यह भाग केवल अनुमोदित लेबल और सत्यापित निर्माता जानकारी से लिखा जाता है।') }}</p>{% endif %}
+</div>
+
+<div class="block" id="howto">
+  <h2>{{ tr('How to Use This Product?','इस उत्पाद का उपयोग कैसे करें?') }}</h2>
+  {% set m = METHODS[p.method or ''] %}
+  <div class="usegrid">
+    <div class="use"><div class="ic">📅</div><b>{{ tr('When to use','कब इस्तेमाल करें') }}</b>{{ sect('','',L(p,'when')) }}</div>
+    <div class="use"><div class="ic">🥣</div><b>{{ tr('How to prepare','कैसे तैयार करें') }}</b>{{ sect('','',L(p,'prepare')) }}</div>
+    <div class="use"><div class="ic">⚖️</div><b>{{ tr('How much to use','कितनी मात्रा') }}</b>{{ sect('','',L(p,'dosage')) }}</div>
+    <div class="use"><div class="ic">{{ m[2] }}</div><b>{{ tr('How to apply','कैसे डालें') }}</b><b style="text-transform:none;letter-spacing:0;font-size:15px">{{ tr(m[0], m[1]) }}</b>{{ sect('','',L(p,'apply')) }}</div>
+  </div>
+  <h3>⚠️ {{ tr('Important precautions','ज़रूरी सावधानियाँ') }}</h3>
+  {% if L(p,'precautions') %}<ul class="ticks">{% for x in lines(L(p,'precautions')) %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="pending">{{ tr('To be added from the verified product label.','सत्यापित प्रोडक्ट लेबल से जोड़ा जाएगा।') }}</span>{% endif %}
+  <p class="warn" style="margin-top:16px">{{ tr('Always read and follow the label on the pack. Do not use a dose or method that is not on the label. Keep out of reach of children.','हमेशा पैक पर लगा लेबल पढ़ें और उसी का पालन करें। जो मात्रा या तरीका लेबल पर नहीं है, उसे न अपनाएँ। बच्चों की पहुँच से दूर रखें।') }}</p>
+</div>
+
+<div class="block">
+  <h2>{{ tr('Product Details','उत्पाद विवरण') }}</h2>
+  <p>{{ L(p,'desc') }}</p>
+  <h3>✅ {{ tr('Benefits','लाभ') }}</h3>
+  {% if L(p,'benefits') %}<ul class="ticks">{% for x in lines(L(p,'benefits')) %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="pending">{{ tr('To be added from the verified product label.','सत्यापित प्रोडक्ट लेबल से जोड़ा जाएगा।') }}</span>{% endif %}
+  <h3>{{ tr('Specifications','विवरणिका') }}</h3>
+  <table class="spec">
+    <tr><td>{{ tr('Composition','संघटन') }}</td><td>{{ p.composition or tr('To be added from label','लेबल से जोड़ा जाएगा') }}</td></tr>
+    <tr><td>{{ tr('Pack sizes','पैक साइज़') }}</td><td>{{ variants|map(attribute='label')|join(', ') }}</td></tr>
+    <tr><td>{{ tr('Storage','भंडारण') }}</td><td>{{ L(p,'storage') or tr('To be added from label','लेबल से जोड़ा जाएगा') }}</td></tr>
+    <tr><td>{{ tr('Batch','बैच') }}</td><td>{{ p.batch_info or tr('Printed on pack','पैक पर छपा होता है') }}</td></tr>
+    <tr><td>{{ tr('Expiry','समाप्ति तिथि') }}</td><td>{{ p.expiry_info or tr('Printed on pack','पैक पर छपी होती है') }}</td></tr>
+    <tr><td>{{ tr('Manufactured by','निर्माता') }}</td><td>{{ p.manufacturer or tr('To be added','जोड़ा जाएगा') }}</td></tr>
+    <tr><td>{{ tr('Marketed by','विपणनकर्ता') }}</td><td>{{ p.marketer or S.business_name }}</td></tr>
+    <tr><td>{{ tr('Regulatory / licence details','नियामक / लाइसेंस विवरण') }}</td><td>{{ p.regulatory or tr('To be added from verified documents','सत्यापित दस्तावेज़ों से जोड़ा जाएगा') }}</td></tr>
+  </table>
+</div>
+
+<div class="block" id="reviews">
+  <h2>{{ tr('Customer Reviews','ग्राहक रिव्यू') }}</h2>
+  {% for r in reviews %}<div class="review" style="margin-bottom:12px">{{ stars(r.rating) }}<p>{{ r.text }}</p><small><b>{{ r.name }}</b> · {{ r.created[:10] }}</small></div>
+  {% else %}<p class="muted">{{ tr('No reviews yet.','अभी कोई रिव्यू नहीं है।') }}</p>{% endfor %}
+  <h3>{{ tr('Write a review','रिव्यू लिखें') }}</h3>
+  {% if user %}
+  <form method="post" action="{{ url_for('add_review', slug=p.slug) }}" class="fl" style="max-width:560px">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <div class="stars-in">{% for i in [5,4,3,2,1] %}<input type="radio" id="st{{ i }}" name="rating" value="{{ i }}"><label for="st{{ i }}" title="{{ i }}">★</label>{% endfor %}</div>
+    <textarea name="text" required minlength="3" maxlength="1000" placeholder="{{ tr('Share your experience','अपना अनुभव लिखें') }}" style="margin:10px 0"></textarea>
+    <button class="btn btn-green" type="submit">{{ tr('Submit review','रिव्यू भेजें') }}</button> <small>{{ tr('Shown after approval.','स्वीकृति के बाद दिखेगा।') }}</small>
+  </form>
+  {% else %}<p><a class="btn btn-line" href="{{ url_for('login', next=request.path) }}">{{ tr('Log in to write a review','रिव्यू लिखने के लिए लॉग इन करें') }}</a></p>{% endif %}
+</div>
+
+{% if related %}<section style="padding:20px 0 70px"><h2 style="margin-bottom:20px">{{ tr('You may also like','आपको ये भी पसंद आ सकते हैं') }}</h2><div class="grid g4">{% for r in related %}{{ card(r) }}{% endfor %}</div></section>{% endif %}
+</div>
+{% endblock %}

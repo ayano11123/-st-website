@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}{% set page='Order' %}
+{% block body %}
+<h1>Order {{ o.order_no }}</h1>
+<div class="grid g2" style="align-items:start">
+  <div class="panel">{% include '_orderbox.html' %}{% if o.rzp_payment_id %}<p class="muted" style="font-size:13px">Razorpay payment: {{ o.rzp_payment_id }}</p>{% endif %}
+    <p style="margin-top:12px"><a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="{{ wa('Hello ' ~ o.name ~ ', this is FAIRY CROP about your order ' ~ o.order_no ~ '.', o.mobile) }}">WhatsApp customer</a></p></div>
+  <form method="post" class="panel fl"><input type="hidden" name="_csrf" value="{{ csrf() }}"><h3 style="margin-bottom:12px">Update order</h3>
+    <label>Order status</label><select name="status">{% for s in statuses %}<option {{ 'selected' if o.status==s }}>{{ s }}</option>{% endfor %}</select><br><br>
+    <label>Payment status</label><select name="payment_status">{% for s in ['pending','paid','cod','failed','refunded'] %}<option {{ 'selected' if o.payment_status==s }}>{{ s }}</option>{% endfor %}</select><br><br>
+    <label>Courier / tracking ID</label><input name="tracking_id" value="{{ o.tracking_id }}"><br><br>
+    <label>Note for customer (shown on tracking page)</label><textarea name="tracking_note">{{ o.tracking_note }}</textarea><br>
+    <button class="btn btn-green" type="submit">Save</button> <a class="btn btn-line" href="{{ url_for('admin.orders') }}">Back</a>
+    <p class="hint">Setting “cancelled” puts the stock back automatically.</p></form>
+</div>
+{% endblock %}

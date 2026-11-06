@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% set title = tr('Policies','नीतियाँ') %}
+{% block content %}
+<div class="page-head"><div class="wrap"><h1>{{ tr('Policies','नीतियाँ') }}</h1></div></div>
+<div class="wrap" style="max-width:860px;padding:34px 0 70px">
+  <p class="warn" style="margin-bottom:22px">{{ tr('DRAFT: these are general starting texts. The owner must confirm and edit them (ideally with a legal adviser) before launch.','ड्राफ़्ट: ये सामान्य शुरुआती पाठ हैं। लॉन्च से पहले मालिक को इन्हें जाँचकर बदलना होगा (बेहतर हो कि किसी कानूनी सलाहकार से)।') }}</p>
+  <div class="block"><h2>{{ tr('Shipping and delivery','शिपिंग और डिलीवरी') }}</h2><p>{{ tr('We deliver to serviceable PIN codes. Shipping charges are shown in the cart and at checkout. The delivery time is confirmed when the order is placed.','हम सेवा-योग्य पिन कोड पर डिलीवरी करते हैं। शिपिंग शुल्क कार्ट और चेकआउट में दिखता है। डिलीवरी का समय ऑर्डर के समय बताया जाता है।') }}</p></div>
+  <div class="block"><h2>{{ tr('Returns, cancellation and refunds','वापसी, रद्द करना और रिफ़ंड') }}</h2><p>{{ tr('Please contact us on WhatsApp or phone with your order number if a product arrives damaged or incorrect. Specific return and refund terms will be confirmed by the business owner.','अगर उत्पाद क्षतिग्रस्त या गलत आए तो ऑर्डर नंबर के साथ हमें WhatsApp या फ़ोन करें। वापसी और रिफ़ंड की विशेष शर्तें व्यवसाय के मालिक द्वारा तय की जाएँगी।') }}</p></div>
+  <div class="block"><h2>{{ tr('Product information and safe use','उत्पाद जानकारी और सुरक्षित उपयोग') }}</h2><p>{{ tr('Product information on this site is meant to help you choose and use products. The label on the pack is final. Results depend on crop, soil, weather and correct use; no yield is guaranteed.','इस साइट की उत्पाद जानकारी आपको उत्पाद चुनने और उपयोग करने में मदद के लिए है। पैक का लेबल ही अंतिम है। नतीजे फ़सल, मिट्टी, मौसम और सही उपयोग पर निर्भर हैं; उपज की कोई गारंटी नहीं।') }}</p></div>
+  <div class="block"><h2>{{ tr('Privacy','गोपनीयता') }}</h2><p>{{ tr('We collect your name, mobile number, address and order details only to process orders, support you and answer enquiries. Payments are handled by Razorpay; we do not store card or UPI details.','हम आपका नाम, मोबाइल नंबर, पता और ऑर्डर विवरण केवल ऑर्डर प्रक्रिया, सहायता और पूछताछ के जवाब के लिए लेते हैं। भुगतान Razorpay संभालता है; हम कार्ड या UPI विवरण नहीं रखते।') }}</p></div>
+</div>
+{% endblock %}

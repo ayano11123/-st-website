@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% set title = tr('Contact Us','संपर्क करें') %}
+{% set description = tr('Contact FAIRY CROP AGRISCIENCE LLP, Karnal, Haryana. Call or WhatsApp 7777000941.','FAIRY CROP AGRISCIENCE LLP, करनाल, हरियाणा से संपर्क करें। कॉल या WhatsApp 7777000941।') %}
+{% block content %}
+<div class="page-head"><div class="wrap"><h1>{{ tr('Contact Us','संपर्क करें') }}</h1><p>{{ tr('Questions about dosage, availability, bulk orders or choosing a product? We are happy to help.','मात्रा, उपलब्धता, थोक ऑर्डर या उत्पाद चुनने के बारे में सवाल? हम मदद के लिए तैयार हैं।') }}</p></div></div>
+<div class="wrap two-col">
+  <div>
+    <div class="panel">
+      <h2 style="font-size:26px;margin-bottom:14px">{{ S.business_name }}</h2>
+      <table class="spec">
+        <tr><td>{{ tr('Brand','ब्रांड') }}</td><td>{{ S.brand }}</td></tr>
+        <tr><td>{{ tr('Contact person','संपर्क व्यक्ति') }}</td><td>{{ S.contact_person }}</td></tr>
+        <tr><td>{{ tr('Mobile / WhatsApp','मोबाइल / WhatsApp') }}</td><td><b>+91 {{ S.phone }}</b></td></tr>
+        <tr><td>{{ tr('Address','पता') }}</td><td>Opp. ITI Main Gate,<br>Karnal, Haryana – 132001,<br>India.</td></tr>
+        {% if S.email %}<tr><td>Email</td><td>{{ S.email }}</td></tr>{% endif %}
+      </table>
+      <p style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-green" href="tel:+91{{ S.phone }}">📞 {{ tr('Call Now','अभी कॉल करें') }}</a><a class="btn btn-wa" target="_blank" rel="noopener" href="{{ wa('Hello FAIRY CROP, I have a question.') }}">💬 WhatsApp</a></p>
+    </div>
+    <iframe class="map" style="margin-top:20px" loading="lazy" title="Map" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Opp.+ITI+Main+Gate,+Karnal,+Haryana+132001&output=embed"></iframe>
+    <p style="margin-top:8px"><a class="link-more" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Opp.+ITI+Main+Gate,+Karnal,+Haryana+132001">{{ tr('Open in Google Maps','Google Maps में खोलें') }} →</a></p>
+  </div>
+  <form method="post" class="panel fl" style="display:grid;gap:14px">
+    <h2 style="font-size:26px">{{ tr('Send us an enquiry','हमें संदेश भेजें') }}</h2>
+    <input type="hidden" name="_csrf" value="{{ csrf() }}"><input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div><label for="n">{{ tr('Your name','आपका नाम') }}</label><input id="n" name="name" required value="{{ f.get('name','') }}"></div>
+    <div><label for="m">{{ tr('Mobile number','मोबाइल नंबर') }}</label><input id="m" name="mobile" required inputmode="numeric" value="{{ f.get('mobile','') }}"></div>
+    <div><label for="ms">{{ tr('Your message','आपका संदेश') }}</label><textarea id="ms" name="message" required>{{ f.get('message','') }}</textarea></div>
+    <button class="btn btn-green" type="submit">{{ tr('Send enquiry','संदेश भेजें') }}</button>
+  </form>
+</div>
+{% endblock %}

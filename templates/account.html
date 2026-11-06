@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% set title = tr('My Account','मेरा खाता') %}
+{% block content %}
+<div class="wrap" style="padding:36px 0 70px">
+  <div class="sec-head"><h1>{{ tr('Hello','नमस्ते') }}, {{ user.name }}</h1>
+    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="_csrf" value="{{ csrf() }}"><button class="btn btn-line btn-sm">{{ tr('Logout','लॉग आउट') }}</button></form></div>
+  <h2 style="font-size:26px;margin-bottom:14px">{{ tr('Order history','ऑर्डर इतिहास') }}</h2>
+  {% if orders %}<div class="panel" style="overflow-x:auto"><table class="spec">
+    <tr><td>{{ tr('Order','ऑर्डर') }}</td><td>{{ tr('Date','तारीख') }}</td><td>{{ tr('Total','कुल') }}</td><td>{{ tr('Status','स्थिति') }}</td><td></td></tr>
+    {% for o in orders %}<tr><td><b>{{ o.order_no }}</b></td><td>{{ o.created[:10] }}</td><td>{{ money(o.total) }}</td><td><span class="pill {{ 'ok' if o.status in ('confirmed','packed','shipped','delivered') else 'warn' }}">{{ tr(STATUS_LABEL[o.status][0], STATUS_LABEL[o.status][1]) }}</span></td>
+      <td><a class="link-more" href="{{ url_for('my_order', order_no=o.order_no) }}">{{ tr('View / track','देखें / ट्रैक करें') }}</a></td></tr>{% endfor %}
+  </table></div>
+  {% else %}<div class="empty">{{ tr('You have not placed any orders yet.','आपने अभी तक कोई ऑर्डर नहीं दिया है।') }}<br><br><a class="btn btn-green" href="{{ url_for('shop') }}">{{ tr('Shop now','अभी खरीदें') }}</a></div>{% endif %}
+</div>
+{% endblock %}

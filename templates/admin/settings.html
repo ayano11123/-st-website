@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}{% set page='Settings' %}
+{% block body %}
+<h1>Settings</h1>
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf() }}">
+<fieldset><legend>Business details</legend><div class="form-grid fl">
+{% for k,l in [('business_name','Business name'),('brand','Brand'),('contact_person','Contact person'),('phone','Phone'),('whatsapp','WhatsApp number'),('email','Email'),('gstin','GSTIN (if any)')] %}<div><label>{{ l }}</label><input name="{{ k }}" value="{{ S[k] }}"></div>{% endfor %}
+<div class="full"><label>Address</label><input name="address" value="{{ S.address }}"></div></div></fieldset>
+<fieldset><legend>Shipping &amp; payment</legend><div class="form-grid fl">
+<div><label>Shipping charge ₹</label><input name="shipping_flat" type="number" value="{{ S.shipping_flat }}"></div><div><label>Free shipping above ₹ (0 = never)</label><input name="free_shipping_above" type="number" value="{{ S.free_shipping_above }}"></div>
+<div class="full"><label>PIN codes you cannot deliver to (comma separated)</label><textarea name="blocked_pincodes">{{ S.blocked_pincodes }}</textarea></div></div>
+<label><input type="checkbox" name="cod_enabled" {{ 'checked' if S.cod_enabled=='1' }}> Offer Cash on Delivery</label><br>
+<label><input type="checkbox" name="show_demo_banner" {{ 'checked' if S.show_demo_banner=='1' }}> Show “DEMO MODE” banner on website</label></fieldset>
+<button class="btn btn-green">Save settings</button></form>
+<fieldset style="margin-top:24px"><legend>Change admin password</legend><form method="post" class="fl" style="max-width:380px"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="action" value="password">
+<label>Current password</label><input type="password" name="old" required><label style="margin-top:8px">New password (min 10 characters)</label><input type="password" name="new" required minlength="10"><label style="margin-top:8px">Repeat new password</label><input type="password" name="new2" required><br><br><button class="btn btn-green">Change password</button></form></fieldset>
+{% endblock %}

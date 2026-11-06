@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% set title = tr('Order','ऑर्डर') ~ ' ' ~ o.order_no %}
+{% block content %}
+<div class="wrap" style="padding:36px 0 70px;max-width:860px">
+  <h1 style="margin-bottom:8px">{{ tr('Order','ऑर्डर') }} {{ o.order_no }}</h1>
+  <p class="muted">{{ o.created[:16] }}</p>
+  <div class="panel" style="margin-top:16px">{% include '_timeline.html' %}</div>
+  <div class="panel" style="margin-top:20px">{% include '_orderbox.html' %}</div>
+  {% if o.payment_method=='online' and o.payment_status in ('pending','failed') and o.status!='cancelled' %}
+    <p style="margin-top:18px"><a class="btn btn-primary" href="{{ url_for('pay_order', order_no=o.order_no) }}">{{ tr('Complete payment','भुगतान पूरा करें') }}</a></p>{% endif %}
+  <p style="margin-top:18px"><a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="{{ wa('Hello FAIRY CROP, I need help with order ' ~ o.order_no) }}">{{ tr('Need help? WhatsApp us','मदद चाहिए? WhatsApp करें') }}</a></p>
+</div>
+{% endblock %}

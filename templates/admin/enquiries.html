@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}{% set page='Enquiries' %}
+{% block body %}
+<h1>Customer enquiries</h1>
+<div class="tw"><table class="t"><tr><th>When</th><th>Type</th><th>Who</th><th>Details</th><th>Status</th><th></th></tr>
+{% for e in rows %}<tr><td>{{ e.created[:16] }}</td><td><span class="pill">{{ e.kind }}</span></td><td><b>{{ e.name }}</b><br><a href="tel:{{ e.mobile }}">{{ e.mobile }}</a>{% if e.business %}<br>{{ e.business }}{% endif %}{% if e.location %}<br><small>{{ e.location }}</small>{% endif %}</td>
+<td>{% if e.message %}{{ e.message }}{% endif %}{% if e.products %}<b>Products:</b> {{ e.products }}<br><b>Qty:</b> {{ e.quantity }}{% endif %}</td><td><span class="pill {{ 'warn' if e.status=='new' else 'ok' }}">{{ e.status }}</span></td>
+<td style="white-space:nowrap"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="id" value="{{ e.id }}">
+<button class="btn btn-line btn-sm" name="action" value="{{ 'new' if e.status=='done' else 'done' }}">{{ 'Reopen' if e.status=='done' else 'Mark done' }}</button> <button class="btn btn-sm" style="background:#fde8e5;color:#8a2218" name="action" value="delete" data-confirm="Delete this enquiry?">✕</button></form></td></tr>
+{% else %}<tr><td colspan="6">No enquiries yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

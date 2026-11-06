@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sec"><div class="wrap" style="max-width:640px;text-align:center">
+  <div style="font-size:64px">🌱</div>
+  <h1 style="font-size:36px;margin:10px 0">{{ title }}</h1>
+  <p style="color:var(--muted)">{{ body }}</p>
+  <p style="margin-top:24px"><a class="btn btn-green" href="{{ url_for('home') }}">{{ tr('Back to home','होम पर जाएँ') }}</a></p>
+</div></section>
+{% endblock %}

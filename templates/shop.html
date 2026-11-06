@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from '_macros.html' import card with context %}
+{% set title = (L(cat_row,'name') if cat_row else tr('All Products','सभी उत्पाद')) %}
+{% block content %}
+<div class="page-head"><div class="wrap">
+  <div class="crumbs"><a href="{{ url_for('home') }}">{{ tr('Home','होम') }}</a> / {{ tr('Shop','खरीदारी') }}</div>
+  <h1>{{ L(cat_row,'name') if cat_row else tr('Shop All Products','सभी उत्पाद') }}</h1>
+  <p>{{ tr('Find the right product by name, crop, plant, problem, price or pack size.','नाम, फ़सल, पौधे, समस्या, कीमत या पैक साइज़ से सही उत्पाद खोजें।') }}</p>
+</div></div>
+<div class="wrap shop" id="products">
+  <form class="filters" method="get" action="{{ url_for('shop') }}">
+    <label for="fq">{{ tr('Search','खोजें') }}</label><input id="fq" name="q" value="{{ a.get('q','') }}" placeholder="{{ tr('Product, crop, problem…','उत्पाद, फ़सल, समस्या…') }}">
+    <label for="fc">{{ tr('Category','श्रेणी') }}</label>
+    <select id="fc" name="category"><option value="">{{ tr('All categories','सभी श्रेणियाँ') }}</option>
+      {% for c in nav_cats %}<option value="{{ c.slug }}" {{ 'selected' if a.get('category')==c.slug }}>{{ L(c,'name') }}</option>{% endfor %}</select>
+    <label for="fcr">{{ tr('Crop','फ़सल') }}</label>
+    <select id="fcr" name="crop"><option value="">{{ tr('Any crop','कोई भी फ़सल') }}</option>{% for c in crops %}<option value="{{ c }}" {{ 'selected' if a.get('crop')==c }}>{{ tag(c)|capitalize }}</option>{% endfor %}</select>
+    <label for="fpl">{{ tr('Plant type','पौधे का प्रकार') }}</label>
+    <select id="fpl" name="plant"><option value="">{{ tr('Any plant','कोई भी पौधा') }}</option>{% for c in plants %}<option value="{{ c }}" {{ 'selected' if a.get('plant')==c }}>{{ tag(c)|capitalize }}</option>{% endfor %}</select>
+    <label for="fpr">{{ tr('Problem to address','समस्या') }}</label>
+    <select id="fpr" name="problem"><option value="">{{ tr('Any','कोई भी') }}</option>{% for c in problems %}<option value="{{ c }}" {{ 'selected' if a.get('problem')==c }}>{{ tag(c)|capitalize }}</option>{% endfor %}</select>
+    <label for="fnd">{{ tr('Gardening / farming need','बागवानी / खेती की ज़रूरत') }}</label>
+    <select id="fnd" name="need"><option value="">{{ tr('Any','कोई भी') }}</option>{% for c in needs %}<option value="{{ c }}" {{ 'selected' if a.get('need')==c }}>{{ tag(c)|capitalize }}</option>{% endfor %}</select>
+    <label for="fpk">{{ tr('Pack size','पैक साइज़') }}</label>
+    <select id="fpk" name="pack"><option value="">{{ tr('Any size','कोई भी साइज़') }}</option>{% for c in packs %}<option {{ 'selected' if a.get('pack')==c }}>{{ c }}</option>{% endfor %}</select>
+    <label>{{ tr('Price (₹)','कीमत (₹)') }}</label>
+    <div class="two"><input name="min" type="number" min="0" placeholder="{{ tr('Min','कम से कम') }}" value="{{ a.get('min','') }}"><input name="max" type="number" min="0" placeholder="{{ tr('Max','अधिकतम') }}" value="{{ a.get('max','') }}"></div>
+    <label for="fs">{{ tr('Sort by','क्रम') }}</label>
+    <select id="fs" name="sort"><option value="">{{ tr('Popular','लोकप्रिय') }}</option><option value="price_asc" {{ 'selected' if a.get('sort')=='price_asc' }}>{{ tr('Price: low to high','कीमत: कम से ज़्यादा') }}</option><option value="price_desc" {{ 'selected' if a.get('sort')=='price_desc' }}>{{ tr('Price: high to low','कीमत: ज़्यादा से कम') }}</option><option value="new" {{ 'selected' if a.get('sort')=='new' }}>{{ tr('Newest','नए') }}</option></select>
+    <div style="display:grid;gap:8px;margin-top:18px"><button class="btn btn-green btn-block" type="submit">{{ tr('Apply filters','फ़िल्टर लगाएँ') }}</button><a class="btn btn-line btn-block" href="{{ url_for('shop') }}">{{ tr('Clear','साफ़ करें') }}</a></div>
+  </form>
+  <div>
+    <div class="toolbar"><span><b>{{ products|length }}</b> {{ tr('products found','उत्पाद मिले') }}</span></div>
+    {% if cat_row and (cat_row.note_en or cat_row.note_hi) %}<p class="warn" style="margin-bottom:18px">{{ L(cat_row,'note') }}</p>{% endif %}
+    {% if products %}<div class="grid g3">{% for p in products %}{{ card(p) }}{% endfor %}</div>
+    {% else %}<div class="empty">🔍 {{ tr('No products match these filters. Try clearing some filters, or ask us on WhatsApp.','इन फ़िल्टरों से कोई उत्पाद नहीं मिला। कुछ फ़िल्टर हटाकर देखें, या हमसे WhatsApp पर पूछें।') }}<br><br><a class="btn btn-wa" target="_blank" rel="noopener" href="{{ wa('Hello FAIRY CROP, I am looking for a product but could not find it on the website.') }}">WhatsApp</a></div>{% endif %}
+  </div>
+</div>
+{% endblock %}

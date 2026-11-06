@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set title = tr('Payment','भुगतान') %}
+{% block content %}
+<div class="wrap" style="max-width:560px;padding:50px 0 80px;text-align:center">
+  <h1 style="font-size:30px">{{ tr('Pay for order','ऑर्डर का भुगतान') }} {{ o.order_no }}</h1>
+  <p class="muted" style="margin:10px 0 20px">{{ tr('Amount','राशि') }}: <b>{{ money(o.total) }}</b></p>
+  <button id="payBtn" class="btn btn-primary">{{ tr('Pay now','अभी भुगतान करें') }}</button>
+  <p class="muted" style="margin-top:14px;font-size:14px">{{ tr('A secure Razorpay window will open. Do not close this page until payment is done.','Razorpay की सुरक्षित विंडो खुलेगी। भुगतान पूरा होने तक यह पेज बंद न करें।') }}</p>
+  <form id="vf" method="post" action="{{ url_for('payment_verify') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="order_no" value="{{ o.order_no }}">
+    <input type="hidden" name="razorpay_payment_id" id="rp"><input type="hidden" name="razorpay_order_id" id="ro"><input type="hidden" name="razorpay_signature" id="rs">
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function(){
+  var opts = {key: {{ rz_key|tojson }}, amount: {{ amount }}, currency: "INR", name: "FAIRY CROP", description: "Order {{ o.order_no }}", order_id: {{ rz_id|tojson }},
+    prefill: {name: {{ o.name|tojson }}, contact: {{ o.mobile|tojson }}}, theme: {color: "#16603a"},
+    handler: function(r){ document.getElementById('rp').value=r.razorpay_payment_id; document.getElementById('ro').value=r.razorpay_order_id; document.getElementById('rs').value=r.razorpay_signature; document.getElementById('vf').submit(); }};
+  function open(){ if(window.Razorpay){ new Razorpay(opts).open(); } else { alert('Payment window could not load. Check your internet and try again.'); } }
+  document.getElementById('payBtn').addEventListener('click', open);
+  window.addEventListener('load', function(){ setTimeout(open, 400); });
+})();
+</script>
+{% endblock %}

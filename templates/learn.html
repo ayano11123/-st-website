@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from '_macros.html' import vcard with context %}
+{% set title = tr('Learn with Fairy Crop','Fairy Crop के साथ सीखें') %}
+{% block content %}
+<div class="page-head"><div class="wrap"><h1>{{ tr('Learn with Fairy Crop','Fairy Crop के साथ सीखें') }}</h1><p>{{ tr('Simple guides and videos on fertilizers, biofertilizers, plant nutrition, soil health, crops and home gardening.','खाद, जैव उर्वरक, पौध पोषण, मिट्टी की सेहत, फ़सलों और घरेलू बागवानी पर आसान गाइड और वीडियो।') }}</p></div></div>
+<div class="wrap" style="padding:30px 0 70px">
+  <div class="chips tabs" style="margin:0 0 24px">
+    <button class="chip on" data-vfilter="">{{ tr('All','सभी') }}</button>
+    {% for k,(en,hi,ic) in {'fertilizers':('Fertilizers','खाद','🌾'),'biofertilizers':('Biofertilizers','जैव उर्वरक','🧫'),'nutrition':('Plant nutrition','पौध पोषण','💧'),'soil':('Soil health','मिट्टी की सेहत','🪱'),'crops':('Crop guidance','फ़सल मार्गदर्शन','🌱'),'home-gardening':('Home gardening','घरेलू बागवानी','🏡'),'problems':('Plant problems','पौधों की समस्याएँ','🔍')}.items() %}
+    <button class="chip" data-vfilter="{{ k }}">{{ ic }} {{ tr(en,hi) }}</button>{% endfor %}
+  </div>
+  <div class="grid g3">{% for v in videos %}<div>{{ vcard(v) }}</div>{% else %}<div class="empty">{{ tr('Videos will appear here.','वीडियो यहाँ दिखेंगे।') }}</div>{% endfor %}</div>
+  <p class="pending" style="margin-top:26px">{{ tr('Videos marked “coming soon” are placeholders. Our team adds YouTube links from the owner dashboard (Admin → Videos).','“जल्द आ रहा है” वाले वीडियो प्लेसहोल्डर हैं। हमारी टीम एडमिन → वीडियो से YouTube लिंक जोड़ती है।') }}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}{% set page='Products' %}
+{% block body %}
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1>Products</h1><a class="btn btn-green" href="{{ url_for('admin.product_new') }}">+ Add product</a></div>
+<div class="tw"><table class="t"><tr><th>Product</th><th>Category</th><th>From</th><th>Packs</th><th>Stock</th><th>Status</th><th></th></tr>
+{% for p in rows %}<tr><td><b>{{ p.name_en }}</b>{% if p.is_demo %} <span class="pill warn">DEMO</span>{% endif %}</td><td>{{ p.cat }}</td><td>{{ money(p.minprice) }}</td><td>{{ p.nvar }}</td><td>{{ p.stock }}</td>
+<td><span class="pill {{ 'ok' if p.active else 'bad' }}">{{ 'Live' if p.active else 'Hidden' }}</span></td>
+<td style="white-space:nowrap"><a class="btn btn-line btn-sm" href="{{ url_for('admin.product_edit', pid=p.id) }}">Edit</a>
+<form method="post" action="{{ url_for('admin.product_toggle', pid=p.id) }}"><input type="hidden" name="_csrf" value="{{ csrf() }}"><button class="btn btn-line btn-sm">{{ 'Hide' if p.active else 'Show' }}</button></form>
+<form method="post" action="{{ url_for('admin.product_delete', pid=p.id) }}"><input type="hidden" name="_csrf" value="{{ csrf() }}"><button class="btn btn-sm" style="background:#fde8e5;color:#8a2218" data-confirm="Delete this product permanently?">Delete</button></form></td></tr>
+{% else %}<tr><td colspan="7">No products.</td></tr>{% endfor %}</table></div>
+{% endblock %}

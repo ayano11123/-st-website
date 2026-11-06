@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set title = tr('Create Account','खाता बनाएँ') %}
+{% block content %}
+<div class="wrap"><div class="auth panel">
+  <h1 style="font-size:30px;margin-bottom:16px">{{ tr('Create your account','अपना खाता बनाएँ') }}</h1>
+  <form method="post" class="fl" style="display:grid;gap:14px">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <div><label for="n">{{ tr('Full name','पूरा नाम') }}</label><input id="n" name="name" required value="{{ f.get('name','') }}" autocomplete="name"></div>
+    <div><label for="m">{{ tr('Mobile number','मोबाइल नंबर') }}</label><input id="m" name="mobile" inputmode="numeric" required value="{{ f.get('mobile','') }}" placeholder="10-digit" autocomplete="tel"></div>
+    <div><label for="e">{{ tr('Email (optional)','ईमेल (वैकल्पिक)') }}</label><input id="e" name="email" type="email" value="{{ f.get('email','') }}"></div>
+    <div><label for="pw">{{ tr('Password (min 8 characters)','पासवर्ड (कम से कम 8 अक्षर)') }}</label><input id="pw" name="password" type="password" minlength="8" required autocomplete="new-password"></div>
+    <button class="btn btn-green btn-block" type="submit">{{ tr('Create account','खाता बनाएँ') }}</button>
+  </form>
+  <p style="margin-top:16px">{{ tr('Already registered?','पहले से खाता है?') }} <a class="link-more" href="{{ url_for('login', next=request.args.get('next')) }}">{{ tr('Login','लॉग इन') }}</a></p>
+</div></div>
+{% endblock %}

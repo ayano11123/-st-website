@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set title = tr('About Us','हमारे बारे में') %}
+{% block content %}
+<section class="about-hero" style="background:linear-gradient(180deg,#eaf3dc,var(--paper))"><div class="wrap" style="max-width:820px">
+  <span class="kicker">{{ S.business_name }}</span>
+  <h1 style="font-size:clamp(34px,5vw,56px)">{{ tr('Making plant nutrition simple and accessible','पौध पोषण को आसान और सबकी पहुँच में लाना') }}</h1>
+  <p style="margin-top:18px;font-size:19px;color:var(--muted)">{{ tr('FAIRY CROP aims to make plant nutrition and agricultural products accessible to Indian farmers and home gardeners — with clear information in Hindi and English, so every customer knows what a product is for and how to use it.','FAIRY CROP का उद्देश्य भारतीय किसानों और घरेलू बागवानों तक पौध पोषण और कृषि उत्पाद आसानी से पहुँचाना है — हिंदी और अंग्रेज़ी में साफ़ जानकारी के साथ, ताकि हर ग्राहक जाने कि उत्पाद किसलिए है और कैसे इस्तेमाल करना है।') }}</p>
+</div></section>
+<section class="sec"><div class="wrap">
+  <div class="grid g3">
+    {% for ic,en,hi,den,dhi in [
+     ('✅','Quality-focused products','गुणवत्ता पर ध्यान','We work with manufacturing partners and present each product only as described on its approved label.','हम निर्माण साझेदारों के साथ काम करते हैं और हर उत्पाद को केवल उसके अनुमोदित लेबल के अनुसार दिखाते हैं।'),
+     ('🌾','Practical farming solutions','व्यावहारिक खेती समाधान','We explain products through real crop and field situations common in India.','हम भारत में आम फ़सलों और खेत की असली स्थितियों के उदाहरणों से उत्पाद समझाते हैं।'),
+     ('🎓','Farmer education','किसान शिक्षा','Simple guides and videos so farmers can make informed decisions.','आसान गाइड और वीडियो, ताकि किसान सोच-समझकर फ़ैसला ले सकें।'),
+     ('🪴','Gardening support','बागवानी सहायता','Small packs and easy steps for balcony, kitchen and flower gardens.','बालकनी, किचन और फूलों के बगीचे के लिए छोटे पैक और आसान तरीके।'),
+     ('💬','Customer assistance','ग्राहक सहायता','Reach us by phone or WhatsApp for help choosing and using products.','उत्पाद चुनने और इस्तेमाल करने में मदद के लिए फ़ोन या WhatsApp पर संपर्क करें।'),
+     ('📄','Responsible, informed use','ज़िम्मेदार और जानकारी-भरा उपयोग','We encourage reading the label, following the dose, and using products safely.','हम लेबल पढ़ने, सही मात्रा अपनाने और उत्पाद सुरक्षित रूप से इस्तेमाल करने को बढ़ावा देते हैं।')] %}
+    <div class="why rv pillar"><div class="ic">{{ ic }}</div><div><h3>{{ tr(en,hi) }}</h3><p>{{ tr(den,dhi) }}</p></div></div>{% endfor %}
+  </div>
+  <div class="panel" style="margin-top:34px"><h3>{{ tr('Business details','व्यवसाय विवरण') }}</h3>
+    <p style="margin-top:8px"><b>{{ S.business_name }}</b> · {{ tr('Brand','ब्रांड') }}: {{ S.brand }}<br>{{ S.address }}<br>{{ tr('Contact','संपर्क') }}: {{ S.contact_person }}, +91 {{ S.phone }}</p>
+    <p style="margin-top:14px"><a class="btn btn-green" href="{{ url_for('contact') }}">{{ tr('Contact us','संपर्क करें') }}</a> <a class="btn btn-line" href="{{ url_for('shop') }}">{{ tr('Shop products','उत्पाद देखें') }}</a></p></div>
+</div></section>
+{% endblock %}

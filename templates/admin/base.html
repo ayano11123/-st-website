@@ -1,0 +1,21 @@
+<!doctype html>
+{% set nav = [('admin.dashboard','🏠','Dashboard'),('admin.products','📦','Products'),('admin.categories','🗂️','Categories'),('admin.orders','🧾','Orders'),('admin.enquiries','📨','Enquiries'),('admin.reviews','⭐','Reviews'),('admin.videos','🎬','Videos'),('admin.banners','🖼️','Banners'),('admin.settings','⚙️','Settings')] %}
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>{{ page or 'Admin' }} | FAIRY CROP Admin</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>.adm .btn{padding:8px 16px;font-size:14.5px}.adm input,.adm select,.adm textarea{font-size:14.5px}.adm .fl{margin-bottom:12px}.adm td form{display:inline}</style></head>
+<body>
+<div class="adm">
+  <aside><span class="brand">🌿 FAIRY CROP</span>
+    {% for ep, ic, label in nav %}<a href="{{ url_for(ep) }}" class="{{ 'on' if (request.endpoint or '.').split('.')[1].startswith(ep.split('.')[1][:-1]) }}">{{ ic }} {{ label }}</a>{% endfor %}
+    <a href="{{ url_for('home') }}" target="_blank" style="margin-top:14px">↗ View website</a>
+    <form method="post" action="{{ url_for('admin.logout') }}"><input type="hidden" name="_csrf" value="{{ csrf() }}"><button class="btn btn-ghost btn-sm" style="margin:12px 10px">Logout</button></form>
+  </aside>
+  <main>
+    {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+    {% block body %}{% endblock %}
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body></html>

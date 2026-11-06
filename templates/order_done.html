@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set title = tr('Order placed','ऑर्डर हो गया') %}
+{% block content %}
+<div class="wrap" style="max-width:760px;padding:50px 0 80px">
+  <div style="text-align:center"><div style="font-size:64px">✅</div>
+  <h1 style="font-size:34px">{{ tr('Thank you! Your order is confirmed.','धन्यवाद! आपका ऑर्डर पक्का हो गया।') }}</h1>
+  <p class="muted" style="margin:8px 0 20px">{{ tr('Order number','ऑर्डर नंबर') }}: <b style="color:var(--g800);font-size:20px">{{ o.order_no }}</b></p></div>
+  <div class="panel">{% include '_orderbox.html' %}</div>
+  <p style="text-align:center;margin-top:22px"><a class="btn btn-green" href="{{ url_for('my_order', order_no=o.order_no) }}">{{ tr('Track this order','ऑर्डर ट्रैक करें') }}</a> <a class="btn btn-line" href="{{ url_for('shop') }}">{{ tr('Continue shopping','खरीदारी जारी रखें') }}</a></p>
+</div>
+{% endblock %}

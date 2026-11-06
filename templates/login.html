@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% set title = tr('Login','लॉग इन') %}
+{% block content %}
+<div class="wrap"><div class="auth panel">
+  <h1 style="font-size:30px;margin-bottom:16px">{{ tr('Login','लॉग इन') }}</h1>
+  <form method="post" class="fl" style="display:grid;gap:14px">
+    <input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <div><label for="m">{{ tr('Mobile number','मोबाइल नंबर') }}</label><input id="m" name="mobile" inputmode="numeric" autocomplete="tel" required placeholder="10-digit"></div>
+    <div><label for="pw">{{ tr('Password','पासवर्ड') }}</label><input id="pw" name="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn btn-green btn-block" type="submit">{{ tr('Login','लॉग इन') }}</button>
+  </form>
+  <p style="margin-top:16px">{{ tr('New here?','नए हैं?') }} <a class="link-more" href="{{ url_for('register', next=request.args.get('next')) }}">{{ tr('Create an account','खाता बनाएँ') }}</a></p>
+  <p class="muted" style="font-size:13.5px;margin-top:8px">{{ tr('Forgot your password? WhatsApp us and we will help.','पासवर्ड भूल गए? हमें WhatsApp करें, हम मदद करेंगे।') }}</p>
+</div></div>
+{% endblock %}

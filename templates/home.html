@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% from '_macros.html' import card, vcard, stars with context %}
+{% set CROP_ICON = {'wheat':'🌾','rice':'🌾','mustard':'🌼','cotton':'☁️','vegetables':'🥬','fruits':'🍎','flowers':'🌸'} %}
+{% set PLANT_ICON = {'home garden plants':'🪴','flowering plants':'🌺','vegetable garden':'🥕','fruit plants':'🍋','flower pots':'🏵️'} %}
+{% block content %}
+
+{# ---------------- HERO ---------------- #}
+{% set h_title = L(banner,'title') if banner else tr('Grow Better. Grow Naturally.','बेहतर उगाएँ, प्राकृतिक रूप से।') %}
+{% set h_sub = L(banner,'subtitle') if banner else tr('Advanced Plant Nutrition for Healthier Crops & Greener Gardens.','स्वस्थ फ़सलों और हरे-भरे बगीचों के लिए उन्नत पौध पोषण।') %}
+{% set h_parts = h_title.split('. ', 1) %}
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">🌿 FAIRY CROP</span>
+      <h1>{% if h_parts|length > 1 %}{{ h_parts[0] }}.<br><em>{{ h_parts[1] }}</em>{% else %}{{ h_title }}{% endif %}</h1>
+      <p class="sub">{{ h_sub }}</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="{{ url_for('shop') }}">{{ tr('Shop Now','अभी खरीदें') }}</a>
+        <a class="btn btn-ghost" href="{{ url_for('shop') }}#products">{{ tr('Explore Products','उत्पाद देखें') }}</a>
+        <a class="btn btn-ghost" href="{{ url_for('contact') }}">{{ tr('Contact Us','संपर्क करें') }}</a>
+      </div>
+      <div class="hero-trust">
+        <span>{{ tr('Hindi & English support','हिंदी और अंग्रेज़ी सहायता') }}</span>
+        <span>{{ tr('UPI, cards & net banking','UPI, कार्ड और नेट बैंकिंग') }}</span>
+        <span>{{ tr('WhatsApp help','WhatsApp सहायता') }}</span>
+      </div>
+    </div>
+    <div class="hero-art">
+      {% if banner and banner.image %}<img src="{{ banner.image }}" alt="{{ h_title }}" fetchpriority="high">
+      {% elif has_img('hero.jpg') %}<img src="{{ url_for('static', filename='img/hero.jpg') }}" alt="{{ tr('Healthy crop field','स्वस्थ फ़सल का खेत') }}" fetchpriority="high">
+      {% else %}{% include '_hero_art.html' %}<span class="art-note">{{ tr('Illustration','चित्रण') }}</span>{% endif %}
+      <div class="hero-chip a">🌾 {{ tr('For farmers','किसानों के लिए') }}</div>
+      <div class="hero-chip b">🪴 {{ tr('For home gardens','घरेलू बगीचों के लिए') }}</div>
+    </div>
+  </div>
+</section>
+
+{# ---------------- FINDER ---------------- #}
+<div class="wrap">
+  <div class="finder rv" id="finder">
+    <h2>{{ tr('Find the Right Product for Your Plant','अपने पौधे के लिए सही उत्पाद खोजें') }}</h2>
+    <p style="color:var(--muted)">{{ tr('Choose your crop or plant to see the products listed for it.','अपनी फ़सल या पौधा चुनें और उसके लिए सूचीबद्ध उत्पाद देखें।') }}</p>
+    <small class="lbl">🚜 {{ tr('I grow a crop','मैं फ़सल उगाता हूँ') }}</small>
+    <div class="chips">{% for c in crops %}<a class="chip" href="{{ url_for('shop', crop=c) }}#products">{{ CROP_ICON.get(c,'🌱') }} {{ tag(c)|capitalize }}</a>{% endfor %}</div>
+    <small class="lbl">🏡 {{ tr('I have a garden or pots','मेरे पास बगीचा या गमले हैं') }}</small>
+    <div class="chips">{% for c in plants %}<a class="chip" href="{{ url_for('shop', plant=c) }}#products">{{ PLANT_ICON.get(c,'🌿') }} {{ tag(c)|capitalize }}</a>{% endfor %}</div>
+    <p style="margin-top:16px;font-size:14px;color:var(--muted)">{{ tr('Products are listed only where the verified product information supports that crop or plant.','उत्पाद केवल तभी सूचीबद्ध होते हैं जब सत्यापित जानकारी उस फ़सल या पौधे का समर्थन करती हो।') }}
+      <a class="link-more" href="{{ url_for('shop') }}">{{ tr('Search by problem, price or pack size','समस्या, कीमत या पैक साइज़ से खोजें') }} →</a></p>
+  </div>
+</div>
+
+{# ---------------- 1. BEST SELLERS ---------------- #}
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Customer favourites','ग्राहकों की पसंद') }}</span><h2>{{ tr('Best Sellers','बेस्ट सेलर') }}</h2></div>
+      <a class="link-more" href="{{ url_for('shop') }}">{{ tr('View all products','सभी उत्पाद देखें') }} →</a></div>
+    <div class="grid g4">{% for p in best %}{{ card(p) }}{% else %}<div class="empty" style="grid-column:1/-1">{{ tr('Best sellers will appear here.','बेस्ट सेलर यहाँ दिखेंगे।') }}</div>{% endfor %}</div>
+  </div>
+</section>
+
+{# ---------------- 2. CATEGORIES ---------------- #}
+<section class="sec alt">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Browse','देखें') }}</span><h2>{{ tr('Shop by Category','श्रेणी के अनुसार खरीदें') }}</h2></div></div>
+    <div class="grid g4" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+      {% for c in nav_cats %}<a class="cat-tile rv" href="{{ url_for('shop', category=c.slug) }}"><span class="cat-ico">{{ c.icon }}</span>{{ L(c,'name') }}</a>{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------------- 3. FEATURED ---------------- #}
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Hand-picked','चुनिंदा') }}</span><h2>{{ tr('Featured Products','विशेष उत्पाद') }}</h2></div></div>
+    <div class="grid g4">{% for p in featured %}{{ card(p) }}{% else %}<div class="empty" style="grid-column:1/-1">{{ tr('Featured products will appear here.','विशेष उत्पाद यहाँ दिखेंगे।') }}</div>{% endfor %}</div>
+  </div>
+</section>
+
+{# ---------------- 4. FARMERS ---------------- #}
+<section class="sec alt">
+  <div class="wrap">
+    <div class="sol farm rv" style="margin-bottom:30px">
+      <span class="eyebrow">🚜 {{ tr('For farmers','किसानों के लिए') }}</span>
+      <h3>{{ tr('Solutions for Farmers','किसानों के लिए समाधान') }}</h3>
+      <p style="max-width:640px">{{ tr('Plant nutrition, soil support and crop care products for wheat, rice, mustard, cotton, vegetables and fruits — with simple Hindi guidance on when and how to use them.','गेहूँ, धान, सरसों, कपास, सब्ज़ियों और फलों के लिए पौध पोषण, मिट्टी सुधार और फ़सल देखभाल उत्पाद — कब और कैसे इस्तेमाल करें, इसकी आसान हिंदी जानकारी के साथ।') }}</p>
+      <ul>
+        <li>{{ tr('Soil and crop nutrition products','मिट्टी और फ़सल पोषण उत्पाद') }}</li>
+        <li>{{ tr('Larger packs for field use','खेत के लिए बड़े पैक') }}</li>
+        <li>{{ tr('Dosage & method explained from the label','लेबल के अनुसार मात्रा और तरीका समझाया गया') }}</li>
+      </ul>
+      <a class="btn btn-primary" href="{{ url_for('shop', crop='wheat') }}#products">{{ tr('Browse farmer products','किसान उत्पाद देखें') }}</a>
+      <span class="big">🌾</span>
+    </div>
+    <div class="grid g4">{% for p in farmer %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+
+{# ---------------- 5. GARDENERS ---------------- #}
+<section class="sec">
+  <div class="wrap">
+    <div class="sol garden rv" style="margin-bottom:30px">
+      <span class="eyebrow" style="background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12)">🏡 {{ tr('For gardeners','बागवानों के लिए') }}</span>
+      <h3>{{ tr('Solutions for Home Gardeners','घरेलू बागवानों के लिए समाधान') }}</h3>
+      <p style="max-width:640px">{{ tr('Easy-to-use plant care for balcony pots, flowering plants, kitchen gardens and fruit plants — in small packs that are simple to measure and use.','बालकनी के गमलों, फूलों वाले पौधों, किचन गार्डन और फलदार पौधों के लिए आसान देखभाल — छोटे पैक में, जिन्हें नापना और इस्तेमाल करना आसान है।') }}</p>
+      <ul>
+        <li>{{ tr('Small packs for pots and balconies','गमलों और बालकनी के लिए छोटे पैक') }}</li>
+        <li>{{ tr('Flowering and vegetable garden support','फूल और सब्ज़ी बगीचे के लिए सहायता') }}</li>
+        <li>{{ tr('Step-by-step usage with pictures','चित्रों के साथ कदम-दर-कदम तरीका') }}</li>
+      </ul>
+      <a class="btn btn-green" href="{{ url_for('shop', category='home-gardening') }}">{{ tr('Browse garden products','बगीचे के उत्पाद देखें') }}</a>
+      <span class="big">🪴</span>
+    </div>
+    <div class="grid g4">{% for p in gardener %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+
+{# ---------------- 6. WHY ---------------- #}
+<section class="sec alt">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Our approach','हमारा तरीका') }}</span><h2>{{ tr('Why Choose Fairy Crop?','Fairy Crop ही क्यों?') }}</h2></div></div>
+    <div class="grid g3">
+      {% set why = [
+        ('✅', tr('Quality-focused products','गुणवत्ता पर ध्यान'), tr('We focus on quality products from manufacturing partners, with information that matches the approved label.','हम निर्माण साझेदारों के गुणवत्तापूर्ण उत्पादों पर ध्यान देते हैं, और जानकारी अनुमोदित लेबल के अनुसार रखते हैं।')),
+        ('🌾', tr('Practical farming solutions','व्यावहारिक खेती समाधान'), tr('Products explained around real Indian crops and real field problems — not just technical names.','उत्पाद असली भारतीय फ़सलों और खेत की असली समस्याओं के हिसाब से समझाए जाते हैं — केवल तकनीकी नाम नहीं।')),
+        ('🎓', tr('Farmer education','किसान शिक्षा'), tr('Simple guides and videos in Hindi and English, so you know how to use a product before you buy.','हिंदी और अंग्रेज़ी में आसान गाइड और वीडियो, ताकि खरीदने से पहले आप उपयोग का तरीका जान सकें।')),
+        ('🪴', tr('Gardening support','बागवानी सहायता'), tr('Small packs and clear steps for home gardeners and plant lovers.','घरेलू बागवानों और पौधा-प्रेमियों के लिए छोटे पैक और साफ़ तरीके।')),
+        ('💬', tr('Customer assistance','ग्राहक सहायता'), tr('Ask about dosage, availability or bulk orders on WhatsApp or phone.','मात्रा, उपलब्धता या थोक ऑर्डर के बारे में WhatsApp या फ़ोन पर पूछें।')),
+        ('📄', tr('Responsible, informed use','ज़िम्मेदार और जानकारी-भरा उपयोग'), tr('We show label-based usage and precautions, and make no guaranteed-yield claims.','हम लेबल के अनुसार उपयोग और सावधानियाँ दिखाते हैं, और उपज की कोई गारंटी नहीं देते।')),
+      ] %}
+      {% for ic, t, d in why %}<div class="why rv"><div class="ic">{{ ic }}</div><h3>{{ t }}</h3><p>{{ d }}</p></div>{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------------- 7. HOW PRODUCTS HELP ---------------- #}
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Simple science','आसान विज्ञान') }}</span><h2>{{ tr('How Our Products Help Plants','हमारे उत्पाद पौधों की कैसे मदद करते हैं') }}</h2>
+      <p>{{ tr('Plants, like people, need the right food at the right time. This is the general idea behind plant nutrition products.','पौधों को भी इंसानों की तरह सही समय पर सही भोजन चाहिए। पौध पोषण उत्पादों के पीछे यही सामान्य विचार है।') }}</p></div></div>
+    <div class="steps" style="margin-top:20px">
+      <div class="step rv"><div class="em">🪱</div><h3>{{ tr('Healthy soil','स्वस्थ मिट्टी') }}</h3><p>{{ tr('Soil holds the nutrients and water that roots depend on.','मिट्टी में वे पोषक तत्व और पानी होते हैं जिन पर जड़ें निर्भर हैं।') }}</p></div>
+      <div class="step rv"><div class="em">🌱</div><h3>{{ tr('Strong roots','मज़बूत जड़ें') }}</h3><p>{{ tr('Roots take up nutrients from the soil to feed the plant.','जड़ें मिट्टी से पोषक तत्व लेकर पौधे को भोजन देती हैं।') }}</p></div>
+      <div class="step rv"><div class="em">🍃</div><h3>{{ tr('Green growth','हरी बढ़वार') }}</h3><p>{{ tr('Leaves use nutrients and sunlight to grow. Some products are sprayed on leaves.','पत्ते पोषक तत्व और धूप से बढ़ते हैं। कुछ उत्पाद पत्तों पर छिड़के जाते हैं।') }}</p></div>
+      <div class="step rv"><div class="em">🌸</div><h3>{{ tr('Flowers & fruit','फूल और फल') }}</h3><p>{{ tr('Well-fed plants are better placed to flower and fruit.','अच्छी तरह पोषित पौधे फूल और फल देने के लिए बेहतर स्थिति में होते हैं।') }}</p></div>
+    </div>
+    <p class="warn" style="margin-top:24px">{{ tr('Results depend on the crop, soil, weather and on following the label. Fairy Crop does not promise a fixed yield increase.','नतीजे फ़सल, मिट्टी, मौसम और लेबल के अनुसार उपयोग पर निर्भर करते हैं। Fairy Crop किसी निश्चित उपज बढ़ोतरी का वादा नहीं करता।') }}</p>
+  </div>
+</section>
+
+{# ---------------- 8. VIDEOS ---------------- #}
+<section class="sec alt">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Learn with Fairy Crop','Fairy Crop के साथ सीखें') }}</span><h2>{{ tr('Farming and Gardening Video Tutorials','खेती और बागवानी वीडियो ट्यूटोरियल') }}</h2></div>
+      <a class="link-more" href="{{ url_for('learn') }}">{{ tr('All tutorials','सभी ट्यूटोरियल') }} →</a></div>
+    <div class="grid g4">{% for v in videos %}{{ vcard(v) }}{% endfor %}</div>
+  </div>
+</section>
+
+{# ---------------- 9. REVIEWS ---------------- #}
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{{ tr('Feedback','प्रतिक्रिया') }}</span><h2>{{ tr('Customer Reviews','ग्राहक रिव्यू') }}</h2></div></div>
+    {% if reviews %}
+    <div class="grid g3">{% for r in reviews %}<div class="review rv">{{ stars(r.rating) }}<p>“{{ r.text }}”</p><small><b>{{ r.name }}</b> · <a href="{{ url_for('product', slug=r.slug) }}">{{ L({'n_en':r.name_en,'n_hi':r.name_hi},'n') }}</a></small></div>{% endfor %}</div>
+    {% else %}
+    <div class="empty">⭐ {{ tr('No customer reviews yet. Reviews from our customers will appear here after they are checked and approved.','अभी कोई ग्राहक रिव्यू नहीं है। हमारे ग्राहकों के रिव्यू जाँच और स्वीकृति के बाद यहाँ दिखेंगे।') }}</div>
+    {% endif %}
+  </div>
+</section>
+
+{# ---------------- 10. FAQ ---------------- #}
+<section class="sec alt">
+  <div class="wrap" style="max-width:860px">
+    <div class="sec-head"><div><span class="kicker">FAQ</span><h2>{{ tr('Frequently Asked Questions','अक्सर पूछे जाने वाले प्रश्न') }}</h2></div></div>
+    {% set faqs = [
+      (tr('How do I know how much of a product to use?','किसी उत्पाद की कितनी मात्रा इस्तेमाल करनी है, यह कैसे पता चले?'), tr('Each product page shows dosage and method taken from the product label. Always follow the label. If unsure, WhatsApp us before use.','हर उत्पाद के पेज पर प्रोडक्ट लेबल से ली गई मात्रा और तरीका दिया जाता है। हमेशा लेबल का पालन करें। असमंजस हो तो उपयोग से पहले हमें WhatsApp करें।')),
+      (tr('Can I pay by UPI, card or net banking?','क्या मैं UPI, कार्ड या नेट बैंकिंग से भुगतान कर सकता हूँ?'), tr('Yes. Online payments are handled securely by Razorpay. Cash on Delivery is offered only when switched on by us.','हाँ। ऑनलाइन भुगतान Razorpay द्वारा सुरक्षित रूप से होता है। कैश ऑन डिलीवरी तभी मिलती है जब हमने उसे चालू किया हो।')),
+      (tr('Do you deliver to my village or town?','क्या आप मेरे गाँव या शहर में डिलीवरी करते हैं?'), tr('Enter your 6-digit PIN code on a product page or at checkout to check. Delivery time is confirmed when you order.','किसी उत्पाद पेज पर या चेकआउट में अपना 6 अंकों का पिन कोड डालकर जाँचें। डिलीवरी का समय ऑर्डर के समय बताया जाता है।')),
+      (tr('How can I track my order?','मैं अपना ऑर्डर कैसे ट्रैक करूँ?'), tr('Use “Track Your Order” with your order number and mobile number, or log in and open your order history.','ऑर्डर नंबर और मोबाइल नंबर से “ऑर्डर ट्रैक करें” का उपयोग करें, या लॉग इन करके अपना ऑर्डर इतिहास खोलें।')),
+      (tr('Do you take bulk orders for dealers, nurseries or farmers?','क्या आप डीलर, नर्सरी या किसानों के थोक ऑर्डर लेते हैं?'), tr('Yes. Fill the bulk enquiry form or WhatsApp us with the products and quantity you need.','हाँ। थोक पूछताछ फ़ॉर्म भरें या ज़रूरी उत्पाद और मात्रा के साथ हमें WhatsApp करें।')),
+      (tr('Will the product guarantee a higher yield?','क्या उत्पाद से ज़्यादा उपज की गारंटी है?'), tr('No. Results depend on crop, soil, weather and correct use. We do not make guaranteed-yield claims.','नहीं। नतीजे फ़सल, मिट्टी, मौसम और सही उपयोग पर निर्भर करते हैं। हम उपज की गारंटी का दावा नहीं करते।')),
+    ] %}
+    {% for qn, an in faqs %}<details class="faq rv"><summary>{{ qn }}</summary><p>{{ an }}</p></details>{% endfor %}
+  </div>
+</section>
+
+{# ---------------- 11. NEWSLETTER ---------------- #}
+<section class="sec" id="newsletter">
+  <div class="wrap">
+    <div class="band rv">
+      <div><h2>{{ tr('Get farming & gardening tips','खेती और बागवानी के सुझाव पाएँ') }}</h2><p>{{ tr('New guides, new products and offers — straight to your inbox. No spam.','नई गाइड, नए उत्पाद और ऑफ़र — सीधे आपके ईमेल पर। कोई स्पैम नहीं।') }}</p></div>
+      <form method="post" action="{{ url_for('newsletter') }}" class="nl">
+        <input type="hidden" name="_csrf" value="{{ csrf() }}">
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="email" name="email" required placeholder="{{ tr('Your email address','आपका ईमेल पता') }}" aria-label="Email">
+        <button class="btn btn-primary" type="submit">{{ tr('Subscribe','सदस्य बनें') }}</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

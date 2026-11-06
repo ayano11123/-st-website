@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}{% set page='Dashboard' %}
+{% block body %}
+<h1>Dashboard</h1>
+{% if s.demo %}<p class="warn" style="margin-bottom:18px">You still have <b>{{ s.demo }}</b> demo product(s). Edit them with real, label-verified information (or delete them) before launch, then untick “Demo” on each and switch off the demo banner in Settings.</p>{% endif %}
+<div class="cards">
+  <div class="stat"><b>{{ s.orders_new }}</b><span>Orders to handle</span></div>
+  <div class="stat"><b>{{ s.orders_total }}</b><span>Total orders</span></div>
+  <div class="stat"><b>{{ money(s.revenue) }}</b><span>Paid / delivered revenue</span></div>
+  <div class="stat"><b>{{ s.enq_new }}</b><span>New enquiries</span></div>
+  <div class="stat"><b>{{ s.rev_pending }}</b><span>Reviews to approve</span></div>
+  <div class="stat"><b>{{ s.products }}</b><span>Products</span></div>
+  <div class="stat"><b>{{ s.low_stock }}</b><span>Low-stock packs (≤5)</span></div>
+</div>
+<h2 style="font-size:22px;margin-bottom:10px">Recent orders</h2>
+<div class="tw"><table class="t"><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr>
+{% for o in recent %}<tr><td><b>{{ o.order_no }}</b><br><small>{{ o.created[:16] }}</small></td><td>{{ o.name }}<br><small>{{ o.mobile }}</small></td><td>{{ money(o.total) }}</td><td>{{ o.payment_method }} / {{ o.payment_status }}</td><td><span class="pill">{{ o.status }}</span></td><td><a class="link-more" href="{{ url_for('admin.order', oid=o.id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="6" class="muted">No orders yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

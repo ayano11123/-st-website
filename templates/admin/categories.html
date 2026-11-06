@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}{% set page='Categories' %}
+{% block body %}
+<h1>Categories</h1>
+<div class="tw" style="margin-bottom:22px"><table class="t"><tr><th>Icon</th><th>English</th><th>हिंदी</th><th>Order</th><th>Note shown on category page</th><th>Products</th><th></th></tr>
+{% for c in rows %}<tr><td><form id="cf{{ c.id }}" method="post"></form><input form="cf{{ c.id }}" type="hidden" name="_csrf" value="{{ csrf() }}"><input form="cf{{ c.id }}" type="hidden" name="id" value="{{ c.id }}"><input form="cf{{ c.id }}" name="icon" value="{{ c.icon }}" style="width:54px"></td>
+<td><input form="cf{{ c.id }}" name="name_en" value="{{ c.name_en }}"></td><td><input form="cf{{ c.id }}" name="name_hi" value="{{ c.name_hi }}"></td><td><input form="cf{{ c.id }}" name="sort" type="number" value="{{ c.sort }}" style="width:64px"></td>
+<td><input form="cf{{ c.id }}" name="note_en" value="{{ c.note_en }}"><br><input form="cf{{ c.id }}" name="note_hi" value="{{ c.note_hi }}" style="margin-top:4px"></td><td>{{ c.n }}</td>
+<td style="white-space:nowrap"><button form="cf{{ c.id }}" class="btn btn-green btn-sm" name="action" value="save">Save</button> <button form="cf{{ c.id }}" class="btn btn-sm" style="background:#fde8e5;color:#8a2218" name="action" value="delete" data-confirm="Delete this category?">Delete</button></td></tr>{% endfor %}</table></div>
+<fieldset><legend>Add a category</legend><form method="post" class="form-grid fl"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="action" value="add">
+<div><label>Name (English)</label><input name="name_en" required></div><div><label>नाम (हिंदी)</label><input name="name_hi"></div><div><label>Icon (emoji)</label><input name="icon" value="🌿"></div><div><label>Order</label><input name="sort" type="number" value="99"></div>
+<div class="full"><button class="btn btn-green">Add category</button></div></form></fieldset>
+{% endblock %}

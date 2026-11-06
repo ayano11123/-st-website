@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from '_macros.html' import pack with context %}
+{% set title = tr('Your Cart','आपका कार्ट') %}
+{% block content %}
+<div class="wrap two-col">
+  <div>
+    <h1 style="margin-bottom:18px">🛒 {{ tr('Shopping Cart','शॉपिंग कार्ट') }}</h1>
+    {% if items %}
+    <form method="post" action="{{ url_for('cart_update') }}" class="panel">
+      <input type="hidden" name="_csrf" value="{{ csrf() }}">
+      {% for it in items %}{% set v = it.v %}
+      <div class="cart-line">
+        <div class="thumb">{% if v.img %}<img src="{{ v.img }}" alt="">{% else %}{{ pack(v.product_id, v.label) }}{% endif %}</div>
+        <div><a class="pname" href="{{ url_for('product', slug=v.slug) }}">{{ v.name_hi if lang=='hi' and v.name_hi else v.name_en }}</a><br><small class="muted">{{ v.label }} · {{ money(v.price) }}{% if v.is_demo %} · DEMO{% endif %}</small>
+          <br><button class="btn btn-sm btn-line" style="margin-top:6px" type="submit" formaction="{{ url_for('cart_remove', vid=v.id) }}" formnovalidate>{{ tr('Remove','हटाएँ') }}</button></div>
+        <div class="qty"><button type="button" data-d="-">−</button><input name="qty_{{ v.id }}" type="number" min="0" max="{{ [v.stock,50]|min }}" value="{{ it.qty }}"><button type="button" data-d="+">+</button></div>
+        <b>{{ money(it.line) }}</b>
+      </div>{% endfor %}
+      <div style="margin-top:16px"><button class="btn btn-line" type="submit">{{ tr('Update cart','कार्ट अपडेट करें') }}</button> <a class="btn btn-line" href="{{ url_for('shop') }}">{{ tr('Continue shopping','खरीदारी जारी रखें') }}</a></div>
+    </form>
+    {% else %}<div class="empty">{{ tr('Your cart is empty.','आपका कार्ट खाली है।') }}<br><br><a class="btn btn-green" href="{{ url_for('shop') }}">{{ tr('Start shopping','खरीदारी शुरू करें') }}</a></div>{% endif %}
+  </div>
+  {% if items %}<aside class="panel">
+    <h3 style="margin-bottom:10px">{{ tr('Order summary','ऑर्डर सारांश') }}</h3>
+    <div class="sum"><span>{{ tr('Subtotal','उप-योग') }}</span><span>{{ money(subtotal) }}</span></div>
+    <div class="sum"><span>{{ tr('Shipping','शिपिंग') }}</span><span>{{ money(ship) if ship else tr('Free','मुफ़्त') }}</span></div>
+    {% if S.free_shipping_above and S.free_shipping_above != '0' %}<small class="muted">{{ tr('Free shipping on orders above','इससे ऊपर के ऑर्डर पर शिपिंग मुफ़्त') }} {{ money(S.free_shipping_above) }}</small>{% endif %}
+    <div class="sum total"><span>{{ tr('Total','कुल') }}</span><span>{{ money(total) }}</span></div>
+    <div class="pin-box" data-pin><b>📍 {{ tr('Check PIN code','पिन कोड जाँचें') }}</b><div class="row" style="margin-top:8px"><input inputmode="numeric" maxlength="6" placeholder="PIN"><button class="btn btn-green btn-sm" type="button">{{ tr('Check','जाँचें') }}</button></div><div class="pin-msg"></div></div>
+    <a class="btn btn-primary btn-block" style="margin-top:16px" href="{{ url_for('checkout') }}">{{ tr('Proceed to Checkout','चेकआउट करें') }}</a>
+  </aside>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+<!doctype html>
+{% from '_macros.html' import logo_mark %}
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+{% set page_title = (title ~ ' | ' ~ S.brand) if title is defined and title else (S.brand ~ ' - ' ~ tr('Grow Better. Grow Naturally.', 'बेहतर उगाएँ, प्राकृतिक रूप से।')) %}
+{% set page_desc = description if description is defined and description else tr('Advanced Plant Nutrition for Healthier Crops & Greener Gardens. Shop plant nutrition and gardening products for Indian farmers and home gardeners.', 'स्वस्थ फ़सलों और हरे-भरे बगीचों के लिए उन्नत पौध पोषण। भारतीय किसानों और घरेलू बागवानों के लिए पौध पोषण और बागवानी उत्पाद।') %}
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_desc }}">
+<meta name="theme-color" content="#0f4a2f">
+<link rel="canonical" href="{{ site_url }}{{ request.path }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ S.brand }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_desc }}">
+<meta property="og:url" content="{{ site_url }}{{ request.path }}">
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script type="application/ld+json">{{ {"@context":"https://schema.org","@type":"Organization","name":S.business_name,"brand":S.brand,"url":site_url,"telephone":"+91"+S.phone,"address":{"@type":"PostalAddress","streetAddress":"Opp. ITI Main Gate","addressLocality":"Karnal","addressRegion":"Haryana","postalCode":"132001","addressCountry":"IN"}}|tojson }}</script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="sr" href="#main">{{ tr('Skip to content','मुख्य सामग्री पर जाएँ') }}</a>
+
+<div class="topbar"><div class="wrap">
+  <span>📞 {{ tr('Call / WhatsApp','कॉल / WhatsApp') }}: <a href="tel:+91{{ S.phone }}">+91 {{ S.phone }}</a> ({{ S.contact_person }})</span>
+  <span>📍 {{ tr('Karnal, Haryana','करनाल, हरियाणा') }} &nbsp;·&nbsp; {{ tr('Prices in ₹ INR','कीमतें ₹ में') }}</span>
+</div></div>
+{% if S.show_demo_banner == '1' %}<div class="demo-banner">⚠️ {{ tr('DEMO MODE: all products, prices, descriptions and pictures are sample content for testing. Real product information will be added from approved labels.','डेमो मोड: सभी उत्पाद, कीमतें, विवरण और चित्र केवल नमूना हैं। असली जानकारी अनुमोदित लेबल से जोड़ी जाएगी।') }}</div>{% endif %}
+
+<header class="site">
+  <div class="wrap hd">
+    <a class="logo" href="{{ url_for('home') }}" aria-label="{{ S.brand }} {{ tr('home','होम') }}">
+      {{ logo_mark() }}
+      <span><b>FAIRY CROP</b><small>{{ tr('Grow Better. Grow Naturally.','बेहतर उगाएँ, प्राकृतिक रूप से') }}</small></span>
+    </a>
+    <form class="search" action="{{ url_for('shop') }}" role="search">
+      <input type="search" name="q" value="{{ request.args.get('q','') }}" placeholder="{{ tr('Search products, crops, problems…','उत्पाद, फ़सल, समस्या खोजें…') }}" aria-label="{{ tr('Search','खोजें') }}">
+      <button type="submit">{{ tr('Search','खोजें') }}</button>
+    </form>
+    <div class="hd-actions">
+      <div class="lang" role="group" aria-label="Language">
+        <a href="{{ url_for('set_lang', code='en') }}" class="{{ 'on' if lang=='en' }}" hreflang="en">English</a>
+        <a href="{{ url_for('set_lang', code='hi') }}" class="{{ 'on' if lang=='hi' }}" hreflang="hi">हिंदी</a>
+      </div>
+      {% if user %}
+        <a class="ib" href="{{ url_for('account') }}">👤 <span class="t">{{ user.name.split()[0] }}</span></a>
+      {% else %}
+        <a class="ib" href="{{ url_for('login') }}">👤 <span class="t">{{ tr('Login','लॉग इन') }}</span></a>
+      {% endif %}
+      <a class="ib" href="{{ url_for('cart') }}" aria-label="{{ tr('Cart','कार्ट') }}">🛒 <span class="t">{{ tr('Cart','कार्ट') }}</span>{% if cart_count %}<span class="badge">{{ cart_count }}</span>{% endif %}</a>
+    </div>
+  </div>
+  <nav class="cats" aria-label="{{ tr('Categories','श्रेणियाँ') }}"><div class="wrap">
+    <a href="{{ url_for('shop') }}" style="font-weight:700">{{ tr('All Products','सभी उत्पाद') }}</a>
+    {% for c in nav_cats %}<a href="{{ url_for('shop', category=c.slug) }}">{{ L(c,'name') }}</a>{% endfor %}
+    <a href="{{ url_for('learn') }}" style="font-weight:700;color:var(--earth)">{{ tr('Learn','सीखें') }}</a>
+    <a href="{{ url_for('bulk') }}" style="font-weight:700;color:var(--earth)">{{ tr('Bulk Orders','थोक ऑर्डर') }}</a>
+  </div></nav>
+</header>
+
+<main id="main">
+{% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}<div class="wrap">{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site">
+  <div class="wrap fg">
+    <div>
+      <a class="logo" href="{{ url_for('home') }}" style="margin-bottom:14px">{{ logo_mark() }}<span><b style="color:#fff">FAIRY CROP</b><small>{{ tr('Grow Better. Grow Naturally.','बेहतर उगाएँ, प्राकृतिक रूप से') }}</small></span></a>
+      <p style="font-size:14.5px;max-width:330px">{{ tr('Advanced Plant Nutrition for Healthier Crops & Greener Gardens.','स्वस्थ फ़सलों और हरे-भरे बगीचों के लिए उन्नत पौध पोषण।') }}</p>
+      <p style="margin-top:12px;font-size:13px;color:#9db8a3">{{ S.business_name }}{% if S.gstin %}<br>GSTIN: {{ S.gstin }}{% endif %}</p>
+    </div>
+    <div><h4>{{ tr('Shop','खरीदारी') }}</h4><ul>
+      <li><a href="{{ url_for('shop') }}">{{ tr('All Products','सभी उत्पाद') }}</a></li>
+      {% for c in nav_cats[:6] %}<li><a href="{{ url_for('shop', category=c.slug) }}">{{ L(c,'name') }}</a></li>{% endfor %}
+    </ul></div>
+    <div><h4>{{ tr('Help','सहायता') }}</h4><ul>
+      <li><a href="{{ url_for('learn') }}">{{ tr('Learn with Fairy Crop','Fairy Crop के साथ सीखें') }}</a></li>
+      <li><a href="{{ url_for('bulk') }}">{{ tr('Bulk Order Enquiry','थोक ऑर्डर पूछताछ') }}</a></li>
+      <li><a href="{{ url_for('track') }}">{{ tr('Track Your Order','ऑर्डर ट्रैक करें') }}</a></li>
+      <li><a href="{{ url_for('about') }}">{{ tr('About Us','हमारे बारे में') }}</a></li>
+      <li><a href="{{ url_for('contact') }}">{{ tr('Contact Us','संपर्क करें') }}</a></li>
+      <li><a href="{{ url_for('policies') }}">{{ tr('Policies','नीतियाँ') }}</a></li>
+    </ul></div>
+    <div><h4>{{ tr('Contact','संपर्क') }}</h4>
+      <p style="font-size:14.5px"><b style="color:#fff">{{ S.business_name }}</b><br>{{ tr('Contact person','संपर्क व्यक्ति') }}: {{ S.contact_person }}<br>{{ S.address }}</p>
+      <p style="margin-top:10px"><a href="tel:+91{{ S.phone }}" style="color:#fff;font-weight:700">📞 +91 {{ S.phone }}</a></p>
+      <p style="margin-top:12px"><a class="btn btn-wa btn-sm" href="{{ wa('Hello FAIRY CROP, I have a question.') }}" target="_blank" rel="noopener">WhatsApp</a></p>
+    </div>
+  </div>
+  <div class="wrap fb"><span>© {{ 2026 }} {{ S.business_name }}. {{ tr('All rights reserved.','सर्वाधिकार सुरक्षित।') }}</span>
+    <span>{{ tr('Please read the product label before use.','उपयोग से पहले प्रोडक्ट लेबल ज़रूर पढ़ें।') }}</span></div>
+</footer>
+
+<a class="float-wa" href="{{ wa(wa_text if wa_text is defined else 'Hello FAIRY CROP, I need help choosing a product.') }}" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9 3 3.3 8.6 3.3 15.5c0 2.3.6 4.4 1.7 6.3L3 29l7.4-1.9a12.8 12.8 0 0 0 5.6 1.3c7 0 12.7-5.600 12.7-12.500S23 3 16 3zm0 23.100c-1.800 0-3.600-.5-5.100-1.400l-.4-.2-4.400 1.100 1.200-4.200-.3-.4a10.300 10.300 0 0 1-1.600-5.500C5.400 9.800 10.200 5.200 16 5.200S26.600 9.800 26.600 15.500 21.800 26.100 16 26.100zm5.800-7.700c-.3-.2-1.900-.9-2.200-1s-.5-.2-.7.200-.8 1-1 1.200-.4.200-.7.100a8.500 8.500 0 0 1-4.200-3.700c-.3-.6.300-.5.900-1.700.1-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.100-.9.400s-1.200 1.200-1.200 2.800 1.200 3.300 1.400 3.500 2.400 3.700 5.800 5.100c2.100.9 3 1 4 .8.600-.1 1.900-.8 2.200-1.500s.3-1.400.2-1.500-.3-.2-.6-.4z"/></svg>
+</a>
+<a class="float-call" href="tel:+91{{ S.phone }}">📞 {{ tr('Call Now','अभी कॉल करें') }}</a>
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

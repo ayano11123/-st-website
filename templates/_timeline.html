@@ -1,0 +1,10 @@
+{# needs: o (order), steps #}
+{% set order_list = ['pending','confirmed','packed','shipped','delivered'] %}
+{% set cur = order_list.index(o.status) if o.status in order_list else -1 %}
+{% if o.status == 'cancelled' %}<p class="flash err">{{ tr('This order was cancelled.','यह ऑर्डर रद्द कर दिया गया।') }}</p>
+{% else %}
+<div class="tl">{% for s in steps %}{% set done = cur >= order_list.index(s) %}
+  <div class="{{ 'done' if done }}"><i>{{ '✓' if done else loop.index }}</i>{{ tr(STATUS_LABEL[s][0], STATUS_LABEL[s][1]) }}</div>{% endfor %}</div>
+{% endif %}
+{% if o.tracking_id %}<p><b>{{ tr('Tracking / courier ID','ट्रैकिंग / कूरियर आईडी') }}:</b> {{ o.tracking_id }}</p>{% endif %}
+{% if o.tracking_note %}<p class="muted">{{ o.tracking_note }}</p>{% endif %}

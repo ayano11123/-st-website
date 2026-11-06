@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Admin login | FAIRY CROP</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body style="background:var(--cream)"><div class="auth panel" style="margin-top:12vh">
+  <h1 style="font-size:28px;margin-bottom:4px">🌿 FAIRY CROP</h1><p class="muted" style="margin-bottom:16px">Owner dashboard login</p>
+  {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+  <form method="post" class="fl" style="display:grid;gap:14px"><input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <div><label for="u">Username</label><input id="u" name="username" required autocomplete="username"></div>
+    <div><label for="p">Password</label><input id="p" name="password" type="password" required autocomplete="current-password"></div>
+    <button class="btn btn-green btn-block" type="submit">Login</button></form>
+</div></body></html>

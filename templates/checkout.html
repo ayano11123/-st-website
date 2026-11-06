@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% set title = tr('Checkout','चेकआउट') %}
+{% block content %}
+<div class="wrap two-col">
+  <form method="post" action="{{ url_for('place_order') }}" class="panel" data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf() }}">
+    <h1 style="font-size:30px;margin-bottom:16px">{{ tr('Delivery address','डिलीवरी पता') }}</h1>
+    <div class="form-grid fl">
+      <div><label for="n">{{ tr('Full name','पूरा नाम') }}</label><input id="n" name="name" required value="{{ last.name if last else u.name }}"></div>
+      <div><label for="m">{{ tr('Mobile number','मोबाइल नंबर') }}</label><input id="m" name="mobile" required inputmode="numeric" value="{{ last.mobile if last else u.mobile }}"></div>
+      <div class="full"><label for="a">{{ tr('Full address (house, street, village / area)','पूरा पता (मकान, गली, गाँव / इलाका)') }}</label><textarea id="a" name="address" required style="min-height:80px">{{ last.address if last else '' }}</textarea></div>
+      <div><label for="c">{{ tr('City / town / district','शहर / कस्बा / ज़िला') }}</label><input id="c" name="city" required value="{{ last.city if last else '' }}"></div>
+      <div><label for="s">{{ tr('State','राज्य') }}</label><input id="s" name="state" required value="{{ last.state if last else 'Haryana' }}"></div>
+      <div data-pin><label for="p">{{ tr('PIN code','पिन कोड') }}</label><div class="pin-box" style="padding:0;background:none"><div class="row"><input id="p" name="pincode" required inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" value="{{ last.pincode if last else '' }}"><button class="btn btn-line btn-sm" type="button">{{ tr('Check','जाँचें') }}</button></div><div class="pin-msg"></div></div></div>
+    </div>
+    <h2 style="font-size:24px;margin:26px 0 12px">{{ tr('Payment','भुगतान') }}</h2>
+    <label class="radio-card {{ '' if rzp_ready else 'off' }}"><input type="radio" name="payment" value="online" {{ 'checked' if rzp_ready }} {{ '' if rzp_ready else 'disabled' }}><span><b>{{ tr('Pay online - UPI, cards, net banking','ऑनलाइन भुगतान - UPI, कार्ड, नेट बैंकिंग') }}</b><br><small class="muted">{% if rzp_ready %}{{ tr('Secure payment by Razorpay.','Razorpay द्वारा सुरक्षित भुगतान।') }}{% else %}{{ tr('Not switched on yet (payment keys not added). Please order via WhatsApp for now.','अभी चालू नहीं है (पेमेंट कीज़ नहीं जुड़ी हैं)। फ़िलहाल WhatsApp से ऑर्डर करें।') }}{% endif %}</small></span></label>
+    {% if cod %}<label class="radio-card"><input type="radio" name="payment" value="cod" {{ 'checked' if not rzp_ready }}><span><b>{{ tr('Cash on Delivery','कैश ऑन डिलीवरी') }}</b></span></label>{% endif %}
+    {% if not rzp_ready and not cod %}<p class="flash err">{{ tr('No payment method is active yet, so orders cannot be placed online.','अभी कोई भुगतान तरीका चालू नहीं है, इसलिए ऑनलाइन ऑर्डर नहीं हो सकता।') }} <a href="{{ wa('Hello FAIRY CROP, I want to place an order.') }}" target="_blank" rel="noopener"><u>WhatsApp</u></a></p>{% endif %}
+    <button class="btn btn-primary btn-block" style="margin-top:14px" type="submit" {{ '' if (rzp_ready or cod) else 'disabled' }}>{{ tr('Place Order','ऑर्डर करें') }} · {{ money(total) }}</button>
+  </form>
+  <aside class="panel">
+    <h3 style="margin-bottom:10px">{{ tr('Your items','आपके सामान') }}</h3>
+    {% for it in items %}<div class="sum"><span>{{ it.v.name_en }} <small class="muted">({{ it.v.label }}) × {{ it.qty }}</small></span><span>{{ money(it.line) }}</span></div>{% endfor %}
+    <div class="sum"><span>{{ tr('Shipping','शिपिंग') }}</span><span>{{ money(ship) if ship else tr('Free','मुफ़्त') }}</span></div>
+    <div class="sum total"><span>{{ tr('Total','कुल') }}</span><span>{{ money(total) }}</span></div>
+  </aside>
+</div>
+{% endblock %}

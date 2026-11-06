@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}{% set page='Reviews' %}
+{% block body %}
+<h1>Customer reviews</h1><p class="hint" style="margin-bottom:12px">Only approved reviews appear on the website.</p>
+<div class="tw"><table class="t"><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Status</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.product }}</td><td>{{ r.name }}<br><small>{{ r.created[:10] }}</small></td><td>{{ '★' * r.rating }}</td><td>{{ r.text }}</td><td><span class="pill {{ 'ok' if r.approved else 'warn' }}">{{ 'Approved' if r.approved else 'Waiting' }}</span></td>
+<td style="white-space:nowrap"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf() }}"><input type="hidden" name="id" value="{{ r.id }}">
+<button class="btn btn-green btn-sm" name="action" value="{{ 'unapprove' if r.approved else 'approve' }}">{{ 'Hide' if r.approved else 'Approve' }}</button> <button class="btn btn-sm" style="background:#fde8e5;color:#8a2218" name="action" value="delete" data-confirm="Delete this review?">✕</button></form></td></tr>
+{% else %}<tr><td colspan="6">No reviews yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}
